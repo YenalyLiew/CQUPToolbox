@@ -1,0 +1,176 @@
+<resources>
+    <string name="app_name">CQUPToolbox</string>
+    <string name="CQUPT">CQUPT</string>
+    <string name="toolbox">Toolbox</string>
+    <string name="CQUPToolbox">CQUPToolbox</string>
+    <string name="CQUPTToolbox_login">CQUPTToolbox 登录</string>
+    <string name="password">密码</string>
+    <string name="remember_id">记住认证码</string>
+    <string name="remember_password">记住密码</string>
+    <string name="auto_login">自动登录</string>
+    <string name="login">登录</string>
+    <string name="ensure_in_cqupt_network">有些功能需要CQUPT内网，因此尽量保证网络处于该状态</string>
+    <string name="logout">登出</string>
+    <string name="search">查询</string>
+    <string name="other">其他</string>
+    <string name="personal_info">个人信息</string>
+    <string name="unified_authentication_code">统一认证码</string>
+    <string name="search_student_info">查询学生信息</string>
+    <string name="search_teacher_info">查询教师信息</string>
+    <string name="search_empty_room">查询空教室</string>
+    <string name="fuzzy_search_input_stu_name_or_id">输入姓名或学号(可模糊搜索)</string>
+    <string name="fuzzy_search_input_teacher_name_or_id">输入姓名或教师号(可模糊搜索)</string>
+    <string name="to_the_top">滑到顶部</string>
+    <string name="previous_page">上一页</string>
+    <string name="next_page">下一页</string>
+    <string name="now_is">现在是</string>
+    <string name="refresh">刷新</string>
+
+    <string name="student_id">学号</string>
+    <string name="student_name">姓名</string>
+    <string name="student_english_name">姓名(英文)</string>
+    <string name="gender">性别</string>
+    <string name="birthday">生日</string>
+    <string name="nation">民族</string>
+    <string name="college">学院</string>
+    <string name="major">专业</string>
+    <string name="clazz">班级</string>
+    <string name="grade">年级</string>
+    <string name="admission_day">入学日期</string>
+    <string name="student_status">学籍状态</string>
+
+    <string name="teacher_id">教师号</string>
+    <string name="teacher_name">姓名</string>
+    <string name="technical_title">职称</string>
+    <string name="teaching_section">教研室</string>
+    <string name="teacher_college">院系名</string>
+    <string name="teacher_gender">性别</string>
+
+    <string name="DI">第</string>
+    <string name="week_ZHOU">周</string>
+    <string name="which_week">第%d周</string>
+    <string name="to">–</string>
+    <string name="week_XINGQI">星期</string>
+    <string name="one_to_two">1–2节</string>
+    <string name="three_to_four">3–4节</string>
+    <string name="five_to_six">5–6节</string>
+    <string name="seven_to_eight">7–8节</string>
+    <string name="nine_to_ten">9–10节</string>
+    <string name="eleven_to_twelve">11–12节</string>
+
+    <string name="all">全部</string>
+    <string name="building_two">二教</string>
+    <string name="building_three">三教</string>
+    <string name="building_four">四教</string>
+    <string name="building_five">五教</string>
+    <string name="building_eight">八教</string>
+
+    <string name="sports">体育</string>
+    <string name="sports_camera_record">摄像头采集记录</string>
+    <string name="sports_check_record">课外锻炼记录</string>
+    <string name="choose_year_term">选择学期：</string>
+    <string name="face_similarity">相似度</string>
+    <string name="start_time">开始：%s</string>
+    <string name="end_time">结束：%s</string>
+    <string name="total_time">总共时长：%s分钟</string>
+    <string name="total_mile">总共里程：%sm</string>
+    <string name="total_lap">记录总共跑了%d圈</string>
+    <string name="average_speed">平均速度：%.2f分钟/圈</string>
+    <string name="sports_item">锻炼项目：%s</string>
+    <string name="sports_is_valid">有效锻炼</string>
+    <string name="sports_is_invalid">无效锻炼</string>
+    <string name="exam_is_valid">已计入考试</string>
+    <string name="extra_is_valid">已计入奖励</string>
+
+    <string name="sports_resume">课外锻炼总览</string>
+    <string name="term_should_complete">本学期应完成</string>
+    <string name="current_should_complete">当前已完成</string>
+    <string name="sports_exam_detail">已计入考试细则</string>
+    <string name="sports_other_detail">已计入奖励细则</string>
+    <string name="sports_total">
+        <Data>
+            <![CDATA[
+            总共<br/><b>%d次</b>
+            ]]>
+        </Data>
+    </string>
+    <string name="sports_run">
+        <Data>
+            <![CDATA[
+            跑步<br/><b>%d次</b>
+            ]]>
+        </Data>
+    </string>
+    <string name="sports_other">
+        <Data>
+            <![CDATA[
+            其他<br/><b>%d次</b>
+            ]]>
+        </Data>
+    </string>
+    <string name="include_in_exam">
+        <Data>
+            <![CDATA[
+            计入考试<br/><b>%d次</b>
+            ]]>
+        </Data>
+    </string>
+    <string name="include_in_other">
+        <Data>
+            <![CDATA[
+            计入奖励<br/><b>%d次</b>
+            ]]>
+        </Data>
+    </string>
+    <string name="sports_run_time">
+        <Data>
+            <![CDATA[
+            跑步总时长<br/><b>%d分钟</b>
+            ]]>
+        </Data>
+    </string>
+    <string name="sports_run_mile">
+        <Data>
+            <![CDATA[
+            跑步总里程<br/><b>%d米</b>
+            ]]>
+        </Data>
+    </string>
+    <string name="sports_other_time">
+        <Data>
+            <![CDATA[
+            其他总时长<br/><b>%d分钟</b>
+            ]]>
+        </Data>
+    </string>
+    <string name="is_exam_valid">
+        <Data>
+            <![CDATA[
+            考试资格<br/><b>%s</b>
+            ]]>
+        </Data>
+    </string>
+
+    <string name="settings">设置</string>
+    <string name="cache">缓存</string>
+    <string name="clear_cache">清除缓存</string>
+    <string name="clear_pdf_cache">清除PDF缓存</string>
+    <string name="current_cache_size">当前缓存大小：%.3fMB</string>
+    <string name="current_pdf_cache_size">当前PDF缓存大小：%.3fMB</string>
+    <string name="no_cache">当前还没有缓存文件</string>
+    <string name="no_pdf_cache">当前还没有PDF缓存文件</string>
+    <string name="about">关于</string>
+    <string name="about_software">关于本软件</string>
+    <string name="clear_other_cache">清除其他缓存</string>
+    <string name="current_other_cache_size">当前其他缓存大小：%.3fMB</string>
+    <string name="no_other_cache">当前还没有其他缓存文件</string>
+    <string name="click_punch">一键打卡</string>
+    <string name="input_open_id">输入OpenID</string>
+    <string name="need_open_id">一键打卡可能需要OpenID</string>
+    <string name="how_to_get_open_id">OpenID：自行抓包，进入资讯页面就可以获得。</string>
+    <string name="open_id_hint">但我发现好像你不自行抓包获取OpenID也可以，先点击确认试试</string>
+
+    <string name="little_function">小功能</string>
+    <string name="ensure_in_safety">一键打卡前务必确定你是绿码人员，处于低风险地区</string>
+    <string name="hello">你好呀</string>
+</resources>

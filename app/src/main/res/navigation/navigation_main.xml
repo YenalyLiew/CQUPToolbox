@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_main"
+    app:startDestination="@id/nav_personal_info">
+
+    <fragment
+        android:id="@id/nav_personal_info"
+        android:name="com.yenaly.cqupttoolbox.ui.fragment.personal_info.PersonalInfoFragment"
+        android:label="@string/personal_info"
+        tools:layout="@layout/fragment_personal_info" />
+
+    <fragment
+        android:id="@id/nav_empty_room_search"
+        android:name="com.yenaly.cqupttoolbox.ui.fragment.search.empty_room.EmptyRoomSearchFragment"
+        android:label="@string/search_empty_room"
+        tools:layout="@layout/fragment_empty_room_search" />
+
+    <fragment
+        android:id="@id/nav_student_sports_resume"
+        android:name="com.yenaly.cqupttoolbox.ui.fragment.sports.student_resume.StudentSportsResumeFragment"
+        android:label="@string/sports_resume"
+        tools:layout="@layout/fragment_student_sports_resume" />
+
+    <fragment
+        android:id="@id/nav_sports_check_record"
+        android:name="com.yenaly.cqupttoolbox.ui.fragment.sports.check_record.SportsCheckRecordFragment"
+        android:label="@string/sports_check_record"
+        tools:layout="@layout/fragment_sports_check_record" />
+
+    <fragment
+        android:id="@id/nav_sports_camera_record"
+        android:name="com.yenaly.cqupttoolbox.ui.fragment.sports.camera_record.SportsCameraRecordFragment"
+        android:label="@string/sports_camera_record"
+        tools:layout="@layout/fragment_sports_camera_record" />
+
+    <activity
+        android:id="@id/nav_settings"
+        android:name="com.yenaly.cqupttoolbox.ui.activity.SettingsActivity"
+        android:label="@string/settings"
+        tools:layout="@layout/settings_activity" />
+
+</navigation>

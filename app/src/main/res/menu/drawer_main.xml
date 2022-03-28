@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_personal_info"
+            android:icon="@drawable/ic_person"
+            android:title="@string/personal_info" />
+    </group>
+
+    <item android:title="@string/search">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_empty_room_search"
+                    android:icon="@drawable/ic_classroom"
+                    android:title="@string/search_empty_room" />
+            </group>
+        </menu>
+    </item>
+
+    <item android:title="@string/sports">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_student_sports_resume"
+                    android:icon="@drawable/ic_article"
+                    android:title="@string/sports_resume" />
+                <item
+                    android:id="@+id/nav_sports_check_record"
+                    android:icon="@drawable/ic_sports"
+                    android:title="@string/sports_check_record" />
+                <item
+                    android:id="@+id/nav_sports_camera_record"
+                    android:icon="@drawable/ic_camera"
+                    android:title="@string/sports_camera_record" />
+            </group>
+        </menu>
+    </item>
+
+    <item android:title="@string/little_function">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/click_punch"
+                    android:icon="@drawable/ic_baseline_health_and_safety_24"
+                    android:title="@string/click_punch" />
+            </group>
+        </menu>
+    </item>
+
+    <item android:title="@string/other">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_settings"
+                    android:icon="@drawable/ic_settings"
+                    android:title="@string/settings" />
+                <item
+                    android:id="@+id/logout"
+                    android:icon="@drawable/ic_logout"
+                    android:title="@string/logout" />
+            </group>
+        </menu>
+    </item>
+
+</menu>

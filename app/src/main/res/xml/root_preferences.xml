@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/cache">
+        <Preference
+            app:icon="@drawable/ic_baseline_clear_all"
+            app:key="clear_other_cache"
+            app:title="@string/clear_other_cache" />
+    </PreferenceCategory>
+    <PreferenceCategory app:title="@string/about">
+        <Preference
+            app:icon="@drawable/ic_baseline_info"
+            app:key="about_software"
+            app:title="@string/about_software" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
