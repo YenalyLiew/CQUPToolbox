@@ -35,10 +35,4 @@
         android:label="@string/sports_camera_record"
         tools:layout="@layout/fragment_sports_camera_record" />
 
-    <activity
-        android:id="@id/nav_settings"
-        android:name="com.yenaly.cqupttoolbox.ui.activity.SettingsActivity"
-        android:label="@string/settings"
-        tools:layout="@layout/settings_activity" />
-
 </navigation>

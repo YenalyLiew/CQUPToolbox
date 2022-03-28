@@ -55,7 +55,7 @@
         <menu>
             <group android:checkableBehavior="single">
                 <item
-                    android:id="@+id/nav_settings"
+                    android:id="@+id/settings"
                     android:icon="@drawable/ic_settings"
                     android:title="@string/settings" />
                 <item

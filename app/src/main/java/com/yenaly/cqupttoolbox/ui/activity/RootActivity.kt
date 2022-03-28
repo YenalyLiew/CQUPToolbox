@@ -39,6 +39,7 @@ abstract class RootActivity : AppCompatActivity() {
         Log.d("dialogWidthPx", dialogWidth.toString())
         Log.d("dialogHeightPx", dialogHeight.toString())
         loadingDialog.window?.setLayout(dialogWidth, dialogHeight)
+
     }
 
     fun hideLoadingDialog() {

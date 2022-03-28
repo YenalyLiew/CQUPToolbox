@@ -19,7 +19,6 @@ import com.yenaly.cqupttoolbox.databinding.FragmentSportsCameraRecordBinding
 import com.yenaly.cqupttoolbox.logic.network.Cookies
 import com.yenaly.cqupttoolbox.ui.activity.MainActivity
 import com.yenaly.cqupttoolbox.ui.viewmodel.MainViewModel
-import com.yenaly.cqupttoolbox.utils.DisplayUtils.dp
 import com.yenaly.cqupttoolbox.utils.ToastUtils.showShortToast
 import org.jsoup.Jsoup
 import kotlin.math.ceil
@@ -64,7 +63,7 @@ class SportsCameraRecordFragment : Fragment() {
         if (viewModel.yearTerm.isEmpty()) {
             (requireActivity() as MainActivity).showLoadingDialog(
                 loadingText = "正在帮你登录智慧体育，等会",
-                dialogWidth = 380.dp
+                dialogWidth = ViewGroup.LayoutParams.WRAP_CONTENT
             )
             viewModel.loginSmartSports(viewModel.userCode!!, viewModel.userPassword!!, "")
         } else {

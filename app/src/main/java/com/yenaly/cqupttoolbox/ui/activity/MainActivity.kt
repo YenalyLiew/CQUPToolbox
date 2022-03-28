@@ -78,6 +78,11 @@ class MainActivity : RootActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.navView.setupWithNavController(navController)
+        binding.navView.menu.findItem(R.id.settings).setOnMenuItemClickListener {
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
+            false
+        }
         binding.navView.menu.findItem(R.id.click_punch).setOnMenuItemClickListener {
             MaterialAlertDialogBuilder(this)
                 .setCancelable(true)
