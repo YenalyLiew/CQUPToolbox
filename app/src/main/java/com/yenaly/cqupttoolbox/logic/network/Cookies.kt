@@ -1,5 +1,6 @@
 package com.yenaly.cqupttoolbox.logic.network
 
+import com.yenaly.cqupttoolbox.logic.dao.LoginDao
 import okhttp3.Cookie
 
 /**
@@ -14,6 +15,6 @@ object Cookies {
 
     val jwzxCookiesList: ArrayList<Cookie> = ArrayList()
 
-    val smartSportsCookiesList: ArrayList<Cookie> = ArrayList()
+    val smartSportsCookiesList: ArrayList<Cookie> = LoginDao.getSmartSportsCookies() ?: ArrayList()
 
 }

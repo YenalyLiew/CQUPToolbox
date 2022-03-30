@@ -43,7 +43,7 @@ object LoginNetwork {
         openId: String,
         username: String,
         password: String
-    ) = LoginNetwork.loginWeCquptCall(openId, username, password).await()
+    ) = loginWeCquptCall(openId, username, password).await()
 
     suspend fun getExecutionValueToSmartSports() =
         getExecutionValueToSmartSportsCall().await()
@@ -170,6 +170,7 @@ object LoginNetwork {
             .add("username", username)
             .add("password", password)
             .add("captcha", captcha)
+            .add("rememberMe", "true")
             .add("_eventId", "submit")
             .add("cllt", "userNameLogin")
             .add("dllt", "generalLogin")

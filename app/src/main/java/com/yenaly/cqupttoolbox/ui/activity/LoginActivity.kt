@@ -11,7 +11,6 @@ import androidx.activity.viewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.yenaly.cqupttoolbox.R
 import com.yenaly.cqupttoolbox.databinding.ActivityLoginBinding
-import com.yenaly.cqupttoolbox.logic.network.Cookies
 import com.yenaly.cqupttoolbox.ui.viewmodel.LoginViewModel
 import com.yenaly.cqupttoolbox.utils.ToastUtils.showShortToast
 import kotlin.concurrent.thread
@@ -134,6 +133,7 @@ class LoginActivity : RootActivity(), View.OnClickListener {
                 binding.rememberIdCheckBox.isChecked,
                 binding.rememberPasswordCheckBox.isChecked
             )
+            viewModel.deleteLoginCookies(binding.rememberPasswordCheckBox.isChecked)
             if (binding.rememberIdCheckBox.isChecked) {
                 viewModel.saveLoginCodeCheckBox(binding.rememberIdCheckBox.isChecked)
                 viewModel.saveLoginCode(code)

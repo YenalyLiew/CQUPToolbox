@@ -157,6 +157,7 @@ class MainActivity : RootActivity() {
 
     private fun backToLoginActivity() {
         val intent = Intent(this, LoginActivity::class.java)
+        Cookies.jwzxCookiesList.clear()
         Cookies.smartSportsCookiesList.clear()
         viewModel.saveNeedAutoLogin(false)
         startActivity(intent)

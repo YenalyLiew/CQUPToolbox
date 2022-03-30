@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import com.google.gson.Gson
+import com.yenaly.cqupttoolbox.logic.dao.LoginDao
 import com.yenaly.cqupttoolbox.logic.model.*
 import com.yenaly.cqupttoolbox.logic.network.*
 import kotlinx.coroutines.Dispatchers
@@ -54,20 +55,15 @@ class Repository {
         end: Int,
         week: Int,
         timeSet: HashSet<Int>
-    ): LiveData<Result<String>> {
-        val responseLiveData = MutableLiveData<Result<String>>()
-        SearchNetwork.getEmptyRoom(start, end, week, timeSet).enqueue(object : Callback {
-            override fun onResponse(call: Call, response: Response) {
-                val string = response.body!!.string()
-                responseLiveData.postValue(Result.success(string))
-                Log.d("getEmptyRoom", string)
-            }
-
-            override fun onFailure(call: Call, e: IOException) {
-                responseLiveData.postValue(Result.failure(e))
-            }
-        })
-        return responseLiveData
+    ) = liveData(Dispatchers.IO) {
+        val result = try {
+            val response = SearchNetwork.getEmptyRoom(start, end, week, timeSet)
+            val string = response.body!!.string()
+            Result.success(string)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+        emit(result)
     }
 
     // SportsNetwork
@@ -92,9 +88,14 @@ class Repository {
                 val statement = docPost.getElementById("yearTerm")
                 Log.d("doc_login", docPost.toString())
                 if (statement != null) {
+                    LoginDao.saveSmartSportsCookies(Cookies.smartSportsCookiesList)
                     Result.success(true)
                 } else {
-                    Result.failure(RuntimeException("别忘了先连接内网，再重新试试吧"))
+                    if (docPost.getElementById("showErrorTip") == null) {
+                        Result.failure(RuntimeException("密码可能不正确，未知错误"))
+                    } else {
+                        Result.failure(RuntimeException("别忘了先连接内网，再重新试试吧"))
+                    }
                 }
             } else {
                 Result.failure(RuntimeException("Cannot get the jwzx execution value."))
@@ -105,20 +106,23 @@ class Repository {
         emit(result)
     }
 
-    fun getSportsYearTerm(): LiveData<Result<String>> {
-        val responseLiveData = MutableLiveData<Result<String>>()
-        SportsNetwork.getSportsYearTerm().enqueue(object : Callback {
-            override fun onResponse(call: Call, response: Response) {
-                Log.d("get_year_term_cookie", Cookies.smartSportsCookiesList.toString())
-                val string = response.body!!.string()
-                responseLiveData.postValue(Result.success(string))
+    fun getSportsYearTerm() = liveData(Dispatchers.IO) {
+        val result = try {
+            val response = SportsNetwork.getSportsYearTerm()
+            val string = response.body!!.string()
+            val doc = Jsoup.parse(string)
+            if (doc.getElementById("showErrorTip") == null) {
+                val yearTerms = doc.select("select[id=yearTerm]").first()?.select("option")
+                Result.success(yearTerms)
+            } else {
+                LoginDao.deleteSmartSportsCookies()
+                Cookies.smartSportsCookiesList.clear()
+                Result.failure(RuntimeException("Cookie已经失效了..."))
             }
-
-            override fun onFailure(call: Call, e: IOException) {
-                responseLiveData.postValue(Result.failure(e))
-            }
-        })
-        return responseLiveData
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+        emit(result)
     }
 
     fun getSportsCameraRecord(yearTerm: String, page: Int) = liveData(Dispatchers.IO) {
@@ -221,7 +225,8 @@ class Repository {
                 )
                 val punchString = punch.body!!.string()
                 Log.d("punch_string", punchString)
-                val punchInformation = Gson().fromJson(punchString, WeLoginResponseModel::class.java)
+                val punchInformation =
+                    Gson().fromJson(punchString, WeLoginResponseModel::class.java)
                 if (punchInformation.message == "OK") {
                     Result.success(true)
                 } else {

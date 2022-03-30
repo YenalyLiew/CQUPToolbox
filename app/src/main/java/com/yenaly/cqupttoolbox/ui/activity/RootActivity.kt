@@ -43,7 +43,9 @@ abstract class RootActivity : AppCompatActivity() {
     }
 
     fun hideLoadingDialog() {
-        loadingDialog.hide()
+        if (this::loadingDialog.isInitialized) {
+            loadingDialog.hide()
+        }
     }
 
     fun getStatusBarHeight(): Int {

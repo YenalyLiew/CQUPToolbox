@@ -1,9 +1,12 @@
 package com.yenaly.cqupttoolbox.ui.viewmodel
 
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.switchMap
 import com.yenaly.cqupttoolbox.logic.Repository
 import com.yenaly.cqupttoolbox.logic.dao.LoginDao
 import com.yenaly.cqupttoolbox.logic.model.*
+import okhttp3.Cookie
 
 /**
  * A view model for main page.
@@ -104,24 +107,6 @@ class MainViewModel : ViewModel() {
 
     val yearTerm = ArrayList<String>()
 
-    private val _loginSmartSportsLiveData = MutableLiveData<LoginModel>()
-    val loginSmartSportsLiveData = _loginSmartSportsLiveData.switchMap {
-        repository.loginSmartSports(it.username, it.password, it.captcha)
-    }
-
-    fun loginSmartSports(username: String, password: String, captcha: String) {
-        _loginSmartSportsLiveData.value = LoginModel(username, password, captcha)
-    }
-
-    private val _getSportsYearTermLiveData = MutableLiveData<Any?>()
-    val getSportsYearTermLiveData = _getSportsYearTermLiveData.switchMap {
-        repository.getSportsYearTerm()
-    }
-
-    fun getSportsYearTerm() {
-        _getSportsYearTermLiveData.value = _getSportsYearTermLiveData.value
-    }
-
     var sportsCameraRecordYearTerm = "20212"
     var sportsCameraRecordCurrentPage = 1
     var sportsCameraRecordTotalPage = 1
@@ -161,4 +146,9 @@ class MainViewModel : ViewModel() {
     fun getStudentSportsResume(yearTerm: String) {
         _studentSportsResumeLiveData.value = yearTerm
     }
+
+    fun saveSmartSportsCookies(cookiesList: ArrayList<Cookie>) =
+        LoginDao.saveSmartSportsCookies(cookiesList)
+
+    fun getSmartSportsCookies() = LoginDao.getSmartSportsCookies()
 }

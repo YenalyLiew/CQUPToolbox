@@ -95,6 +95,18 @@ object LoginDao {
         return sharedPreferences().getBoolean("auto_login", false)
     }
 
+    fun saveSmartSportsCookies(cookiesList: ArrayList<Cookie>) {
+        sharedPreferences().edit {
+            val cookies = Gson().toJson(cookiesList)
+            putString("smart_sports_cookies", cookies)
+        }
+    }
+
+    fun getSmartSportsCookies(): ArrayList<Cookie>? {
+        val cookies = sharedPreferences().getString("smart_sports_cookies", "") ?: ""
+        return Gson().fromJson(cookies, object : TypeToken<ArrayList<Cookie>>() {}.type)
+    }
+
     fun deleteSaveLoginInfo(idIsChecked: Boolean, passwordIsChecked: Boolean) {
         sharedPreferences().edit {
             if (!idIsChecked) clear()
@@ -103,13 +115,23 @@ object LoginDao {
                 remove("login_id")
                 remove("login_name")
                 remove("login_cookies")
+                remove("smart_sports_cookies")
             }
         }
     }
 
     fun deleteLoginCookies(saveIsChecked: Boolean) {
         sharedPreferences().edit {
-            if (!saveIsChecked) remove("login_cookies")
+            if (!saveIsChecked) {
+                remove("login_cookies")
+                remove("smart_sports_cookies")
+            }
+        }
+    }
+
+    fun deleteSmartSportsCookies() {
+        sharedPreferences().edit {
+            remove("smart_sports_cookies")
         }
     }
 

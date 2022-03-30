@@ -2,6 +2,7 @@ package com.yenaly.cqupttoolbox.logic.network
 
 import android.util.Log
 import okhttp3.*
+import ru.gildor.coroutines.okhttp.await
 import java.util.concurrent.TimeUnit
 
 /**
@@ -34,7 +35,14 @@ object SearchNetwork {
             .connectTimeout(TIME_OUT_SECOND, TimeUnit.SECONDS)
             .build()
 
-    fun getEmptyRoom(
+    suspend fun getEmptyRoom(
+        start: Int,
+        end: Int,
+        week: Int,
+        timeSet: HashSet<Int>
+    ) = getEmptyRoomCall(start, end, week, timeSet).await()
+
+    private fun getEmptyRoomCall(
         start: Int,
         end: Int,
         week: Int,

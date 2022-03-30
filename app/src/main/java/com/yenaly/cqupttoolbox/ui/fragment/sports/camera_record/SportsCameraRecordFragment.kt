@@ -19,12 +19,13 @@ import com.yenaly.cqupttoolbox.databinding.FragmentSportsCameraRecordBinding
 import com.yenaly.cqupttoolbox.logic.network.Cookies
 import com.yenaly.cqupttoolbox.ui.activity.MainActivity
 import com.yenaly.cqupttoolbox.ui.viewmodel.MainViewModel
+import com.yenaly.cqupttoolbox.ui.viewmodel.SportsSingleViewModel
 import com.yenaly.cqupttoolbox.utils.ToastUtils.showShortToast
-import org.jsoup.Jsoup
 import kotlin.math.ceil
 
 /**
  * A fragment for sports camera record.
+ *
  * @ProjectName : CQUPTDox
  * @Author : Yenaly Liew
  * @Time : 2022/02/21 021 22:14
@@ -36,6 +37,7 @@ class SportsCameraRecordFragment : Fragment() {
     private var _binding: FragmentSportsCameraRecordBinding? = null
     private val binding get() = _binding!!
     private val viewModel: MainViewModel by activityViewModels()
+    private val selfViewModel = SportsSingleViewModel()  // Deliberately
     private lateinit var adapter: SportsCameraRecordAdapter
 
     override fun onCreateView(
@@ -60,13 +62,17 @@ class SportsCameraRecordFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (viewModel.yearTerm.isEmpty()) {
+        if (viewModel.yearTerm.isEmpty() && Cookies.smartSportsCookiesList.isNotEmpty()) {
+            selfViewModel.getSportsYearTerm()
+        }
+        if (Cookies.smartSportsCookiesList.isEmpty()) {
             (requireActivity() as MainActivity).showLoadingDialog(
                 loadingText = "正在帮你登录智慧体育，等会",
                 dialogWidth = ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            viewModel.loginSmartSports(viewModel.userCode!!, viewModel.userPassword!!, "")
+            selfViewModel.loginSmartSports(viewModel.userCode!!, viewModel.userPassword!!, "")
         } else {
+            if (viewModel.yearTerm.isEmpty()) selfViewModel.getSportsYearTerm()
             viewModel.getSportsCameraRecord(
                 viewModel.sportsCameraRecordYearTerm,
                 viewModel.sportsCameraRecordCurrentPage
@@ -169,13 +175,13 @@ class SportsCameraRecordFragment : Fragment() {
             }
         })
 
-        viewModel.loginSmartSportsLiveData.observe(viewLifecycleOwner) { result ->
+        selfViewModel.loginSmartSportsLiveData.observe(viewLifecycleOwner) { result ->
             val isSuccess = result.getOrNull()
             if (isSuccess != null) {
                 if (isSuccess) {
                     if (viewModel.yearTerm.isEmpty()) {
                         (requireActivity() as MainActivity).hideLoadingDialog()
-                        viewModel.getSportsYearTerm()
+                        selfViewModel.getSportsYearTerm()
                     }
                 }
             } else {
@@ -185,13 +191,11 @@ class SportsCameraRecordFragment : Fragment() {
             }
         }
 
-        viewModel.getSportsYearTermLiveData.observe(viewLifecycleOwner) { result ->
-            val string = result.getOrNull()
-            if (string != null) {
-                Log.d("get_sports_year_term", string)
-                val doc = Jsoup.parse(string)
-                val yearTerms = doc.select("select[id=yearTerm]").first()?.select("option")
-                if (yearTerms != null && viewModel.yearTerm.isEmpty()) {
+        selfViewModel.getSportsYearTermLiveData.observe(viewLifecycleOwner) { result ->
+            val yearTerms = result.getOrNull()
+            if (yearTerms != null) {
+                Log.d("get_sports_year_term", yearTerms.toString())
+                if (viewModel.yearTerm.isEmpty()) {
                     for (yearTerm in yearTerms) {
                         viewModel.yearTerm.add(yearTerm.text())
                     }

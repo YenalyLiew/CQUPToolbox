@@ -69,6 +69,8 @@ object SportsNetwork {
         }
     }
 
+    suspend fun getSportsYearTerm() = getSportsYearTermCall().await()
+
     suspend fun getSportsCameraRecord(yearTerm: String, page: Int) =
         getSportsCameraRecordCall(yearTerm, page).await()
 
@@ -78,7 +80,7 @@ object SportsNetwork {
     suspend fun getStudentSportsResume(yearTerm: String) =
         getStudentSportsResumeCall(yearTerm).await()
 
-    fun getSportsYearTerm(): Call {
+    private fun getSportsYearTermCall(): Call {
         val httpUrl = HttpUrl.Builder()
             .scheme("http")
             .host(SMART_SPORTS_BASE)
