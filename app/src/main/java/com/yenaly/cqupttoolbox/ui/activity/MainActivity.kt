@@ -12,6 +12,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.yenaly.cqupttoolbox.R
 import com.yenaly.cqupttoolbox.databinding.ActivityMainBinding
@@ -124,6 +125,7 @@ class MainActivity : RootActivity() {
         headerStuId = headerView.findViewById(R.id.stu_id)
         headerStuName = headerView.findViewById(R.id.stu_name)
 
+        Glide.with(this).load(R.mipmap.ic_launcher).into(headerStuPic)
         headerStuName.text = viewModel.currentUserName
         headerStuId.text = viewModel.currentUserId
     }

@@ -1,16 +1,16 @@
 package com.yenaly.cqupttoolbox.ui.fragment.sports.camera_record
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -21,7 +21,7 @@ import com.yenaly.cqupttoolbox.ui.activity.MainActivity
 import com.yenaly.cqupttoolbox.ui.viewmodel.MainViewModel
 import com.yenaly.cqupttoolbox.ui.viewmodel.SportsSingleViewModel
 import com.yenaly.cqupttoolbox.utils.ToastUtils.showShortToast
-import kotlin.math.ceil
+import kotlinx.coroutines.launch
 
 /**
  * A fragment for sports camera record.
@@ -38,7 +38,6 @@ class SportsCameraRecordFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: MainViewModel by activityViewModels()
     private val selfViewModel = SportsSingleViewModel()  // Deliberately
-    private lateinit var adapter: SportsCameraRecordAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,10 +50,6 @@ class SportsCameraRecordFragment : Fragment() {
         if (Cookies.smartSportsCookiesList.isNotEmpty() && viewModel.yearTerm.isNotEmpty()) {
             binding.yearTerm.setItems(viewModel.yearTerm)
         }
-        binding.totalPage.text = viewModel.sportsCameraRecordTotalPage.toString()
-        binding.whichPage.setText(viewModel.sportsCameraRecordCurrentPage.toString())
-        pageSelectButtonEnabled(viewModel.sportsCameraRecordCurrentPage)
-
         return binding.root
     }
 
@@ -62,9 +57,11 @@ class SportsCameraRecordFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (viewModel.yearTerm.isEmpty() && Cookies.smartSportsCookiesList.isNotEmpty()) {
-            selfViewModel.getSportsYearTerm()
-        }
+        val layoutManager = LinearLayoutManager(activity)
+        binding.sportsRv.layoutManager = layoutManager
+        val pagingAdapter = CameraRecordPagingAdapter(this)
+        binding.sportsRv.adapter = pagingAdapter
+
         if (Cookies.smartSportsCookiesList.isEmpty()) {
             (requireActivity() as MainActivity).showLoadingDialog(
                 loadingText = "正在帮你登录智慧体育，等会",
@@ -72,80 +69,34 @@ class SportsCameraRecordFragment : Fragment() {
             )
             selfViewModel.loginSmartSports(viewModel.userCode!!, viewModel.userPassword!!, "")
         } else {
-            if (viewModel.yearTerm.isEmpty()) selfViewModel.getSportsYearTerm()
-            viewModel.getSportsCameraRecord(
-                viewModel.sportsCameraRecordYearTerm,
-                viewModel.sportsCameraRecordCurrentPage
-            )
-        }
-
-        val layoutManager = LinearLayoutManager(activity)
-        binding.sportsRv.layoutManager = layoutManager
-        adapter = SportsCameraRecordAdapter(this, viewModel.sportsCameraRecordList)
-        binding.sportsRv.adapter = adapter
-
-        val imm =
-            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-
-        binding.whichPage.setOnEditorActionListener { v, _, _ ->
-            if (v.text.toString().isNotBlank()) {
-                if (v.text.toString().toInt() <= viewModel.sportsCameraRecordTotalPage &&
-                    v.text.toString().toInt() != 0
-                ) {
-                    pageSelectButtonEnabled(v.text.toString().toInt())
-                    imm.hideSoftInputFromWindow(v.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
-                    binding.whichPage.clearFocus()
-                    viewModel.sportsCameraRecordCurrentPage = v.text.toString().toInt()
-                    viewModel.getSportsCameraRecord(
-                        viewModel.sportsCameraRecordYearTerm,
-                        viewModel.sportsCameraRecordCurrentPage
-                    )
-                } else {
-                    "呃呃呃...没那么多页".showShortToast()
+            if (viewModel.yearTerm.isEmpty()) {
+                selfViewModel.getSportsYearTerm()
+            } else {
+                lifecycleScope.launch {
+                    viewModel.getSportsCameraRecordPaging(
+                        yearTerm = viewModel.sportsCameraRecordYearTerm
+                    ) { pages ->
+                        viewModel.sportsCameraRecordTotalPage = pages
+                    }.collect { pagingData ->
+                        pagingAdapter.submitData(pagingData)
+                    }
                 }
             }
-            true
-        }
-
-        binding.previousPage.setOnClickListener {
-            if (
-                viewModel.sportsCameraRecordCurrentPage > 0 &&
-                viewModel.sportsCameraRecordCurrentPage <= viewModel.sportsCameraRecordTotalPage
-            ) {
-                viewModel.sportsCameraRecordCurrentPage -= 1
-                pageSelectButtonEnabled(viewModel.sportsCameraRecordCurrentPage)
-                binding.whichPage.setText(viewModel.sportsCameraRecordCurrentPage.toString())
-                viewModel.getSportsCameraRecord(
-                    viewModel.sportsCameraRecordYearTerm,
-                    viewModel.sportsCameraRecordCurrentPage
-                )
-            }
-            imm.hideSoftInputFromWindow(view.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
-            binding.whichPage.clearFocus()
-        }
-
-        binding.nextPage.setOnClickListener {
-            if (
-                viewModel.sportsCameraRecordCurrentPage > 0 &&
-                viewModel.sportsCameraRecordCurrentPage <= viewModel.sportsCameraRecordTotalPage
-            ) {
-                viewModel.sportsCameraRecordCurrentPage += 1
-                pageSelectButtonEnabled(viewModel.sportsCameraRecordCurrentPage)
-                binding.whichPage.setText(viewModel.sportsCameraRecordCurrentPage.toString())
-                viewModel.getSportsCameraRecord(
-                    viewModel.sportsCameraRecordYearTerm,
-                    viewModel.sportsCameraRecordCurrentPage
-                )
-            }
-            imm.hideSoftInputFromWindow(view.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
-            binding.whichPage.clearFocus()
         }
 
         binding.yearTerm.setOnItemSelectedListener { _, _, _, item ->
             viewModel.sportsCameraRecordCurrentPage = 1
-            binding.whichPage.setText(viewModel.sportsCameraRecordCurrentPage.toString())
             viewModel.sportsCameraRecordYearTerm = item as String
-            viewModel.getSportsCameraRecord(item, viewModel.sportsCameraRecordCurrentPage)
+            lifecycleScope.launch {
+                viewModel.getSportsCameraRecordPaging(
+                    yearTerm = viewModel.sportsCameraRecordYearTerm
+                ) { pages ->
+                    viewModel.sportsCameraRecordTotalPage = pages
+                }.collect { pagingData ->
+                    pagingAdapter.submitData(pagingData)
+                    layoutManager.scrollToPosition(0)
+                }
+            }
         }
 
         binding.fab.setOnClickListener {
@@ -200,12 +151,17 @@ class SportsCameraRecordFragment : Fragment() {
                         viewModel.yearTerm.add(yearTerm.text())
                     }
                     viewModel.sportsCameraRecordYearTerm = viewModel.yearTerm[0]
+                    lifecycleScope.launch {
+                        viewModel.getSportsCameraRecordPaging(
+                            yearTerm = viewModel.sportsCameraRecordYearTerm
+                        ) { pages ->
+                            viewModel.sportsCameraRecordTotalPage = pages
+                        }.collect { pagingData ->
+                            pagingAdapter.submitData(pagingData)
+                        }
+                    }
                 }
                 binding.yearTerm.setItems(viewModel.yearTerm)
-                viewModel.getSportsCameraRecord(
-                    viewModel.sportsCameraRecordYearTerm,
-                    viewModel.sportsCameraRecordCurrentPage
-                )
                 Log.d("yearTerm", viewModel.yearTerm.toString())
             } else {
                 result.exceptionOrNull()?.printStackTrace()
@@ -213,21 +169,15 @@ class SportsCameraRecordFragment : Fragment() {
             }
         }
 
-        viewModel.sportsCameraRecordLiveData.observe(viewLifecycleOwner) { result ->
-            val sportsRecord = result.getOrNull()
-            if (sportsRecord != null) {
-                viewModel.sportsCameraRecordList.clear()
-                viewModel.sportsCameraRecordList.addAll(sportsRecord.rows)
-                if (viewModel.sportsCameraRecordTotalPage != ceil(sportsRecord.total / 10.0).toInt()) {
-                    viewModel.sportsCameraRecordTotalPage = ceil(sportsRecord.total / 10.0).toInt()
-                    binding.totalPage.text = viewModel.sportsCameraRecordTotalPage.toString()
+        pagingAdapter.addLoadStateListener {
+            when (it.refresh) {
+                is LoadState.NotLoading -> {
                 }
-                pageSelectButtonEnabled(viewModel.sportsCameraRecordCurrentPage)
-                adapter.notifyDataSetChanged()
-                binding.sportsRv.smoothScrollToPosition(0)
-            } else {
-                result.exceptionOrNull()?.printStackTrace()
-                "呃呃呃...体育信息获取失败".showShortToast()
+                is LoadState.Loading -> {
+                }
+                is LoadState.Error -> {
+                    "呃呃呃...体育信息获取失败".showShortToast()
+                }
             }
         }
     }
@@ -235,31 +185,5 @@ class SportsCameraRecordFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-    }
-
-    private fun pageSelectButtonEnabled(page: Int) {
-        when (page) {
-            0 -> {
-                binding.previousPage.isEnabled = false
-                binding.nextPage.isEnabled = false
-            }
-            1 -> {
-                if (viewModel.sportsCameraRecordTotalPage == 1) {
-                    binding.previousPage.isEnabled = false
-                    binding.nextPage.isEnabled = false
-                } else {
-                    binding.previousPage.isEnabled = false
-                    binding.nextPage.isEnabled = true
-                }
-            }
-            viewModel.sportsCameraRecordTotalPage -> {
-                binding.previousPage.isEnabled = true
-                binding.nextPage.isEnabled = false
-            }
-            else -> {
-                binding.previousPage.isEnabled = true
-                binding.nextPage.isEnabled = true
-            }
-        }
     }
 }

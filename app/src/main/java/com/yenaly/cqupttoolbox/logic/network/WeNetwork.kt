@@ -150,7 +150,7 @@ object WeNetwork {
         val date = Calendar.getInstance(TimeZone.getTimeZone("CTT"))
         val day = date.get(Calendar.DAY_OF_MONTH)
         val hour = date.get(Calendar.HOUR_OF_DAY)
-        val key = r[day] + u[hour]
+        val key = r[day - 1] + u[hour]
         Log.d("punch_related", "day:$day, hour:$hour, key:$key")
         val formMap = mapOf(
             "name" to name,

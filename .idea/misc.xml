@@ -14,9 +14,11 @@
         <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/layout/dialog_punch.xml" value="0.36" />
         <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/layout/fragment_empty_room_search.xml" value="0.1265625" />
         <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/layout/fragment_personal_info.xml" value="0.22826086956521738" />
-        <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/layout/fragment_sports_camera_record.xml" value="0.1265625" />
+        <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/layout/fragment_sports_camera_record.xml" value="0.268" />
         <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/layout/fragment_sports_check_record.xml" value="0.1265625" />
         <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/layout/fragment_student_sports_resume.xml" value="0.1265625" />
+        <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/layout/item_sports_camera_record.xml" value="0.1265625" />
+        <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/layout/item_sports_check_record.xml" value="0.1265625" />
         <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/layout/nav_header_ability.xml" value="0.22826086956521738" />
         <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/layout/settings_activity.xml" value="0.22826086956521738" />
         <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/menu/drawer_main.xml" value="0.275" />

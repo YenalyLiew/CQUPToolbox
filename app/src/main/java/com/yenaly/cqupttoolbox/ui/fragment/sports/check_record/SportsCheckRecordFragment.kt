@@ -1,16 +1,16 @@
 package com.yenaly.cqupttoolbox.ui.fragment.sports.check_record
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.yenaly.cqupttoolbox.R
@@ -20,7 +20,7 @@ import com.yenaly.cqupttoolbox.ui.activity.MainActivity
 import com.yenaly.cqupttoolbox.ui.viewmodel.MainViewModel
 import com.yenaly.cqupttoolbox.ui.viewmodel.SportsSingleViewModel
 import com.yenaly.cqupttoolbox.utils.ToastUtils.showShortToast
-import kotlin.math.ceil
+import kotlinx.coroutines.launch
 
 /**
  * A fragment for sports check record.
@@ -49,15 +49,17 @@ class SportsCheckRecordFragment : Fragment() {
         if (Cookies.smartSportsCookiesList.isNotEmpty() && viewModel.yearTerm.isNotEmpty()) {
             binding.yearTerm.setItems(viewModel.yearTerm)
         }
-        binding.totalPage.text = viewModel.sportsCheckRecordTotalPage.toString()
-        binding.whichPage.setText(viewModel.sportsCheckRecordCurrentPage.toString())
-        pageSelectButtonEnabled(viewModel.sportsCheckRecordCurrentPage)
         return binding.root
     }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val layoutManager = LinearLayoutManager(activity)
+        binding.sportsRv.layoutManager = layoutManager
+        val pagingAdapter = CheckRecordPagingAdapter(this)
+        binding.sportsRv.adapter = pagingAdapter
 
         if (Cookies.smartSportsCookiesList.isEmpty()) {
             (requireActivity() as MainActivity).showLoadingDialog(
@@ -66,80 +68,34 @@ class SportsCheckRecordFragment : Fragment() {
             )
             selfViewModel.loginSmartSports(viewModel.userCode!!, viewModel.userPassword!!, "")
         } else {
-            if (viewModel.yearTerm.isEmpty()) selfViewModel.getSportsYearTerm()
-            viewModel.getSportsCheckRecord(
-                viewModel.sportsCheckRecordYearTerm,
-                viewModel.sportsCheckRecordCurrentPage
-            )
-        }
-
-        val layoutManager = LinearLayoutManager(activity)
-        binding.sportsRv.layoutManager = layoutManager
-        val adapter = SportsCheckRecordAdapter(this, viewModel.sportsCheckRecordList)
-        binding.sportsRv.adapter = adapter
-
-        val imm =
-            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-
-        binding.whichPage.setOnEditorActionListener { v, _, _ ->
-            if (v.text.toString().isNotBlank()) {
-                if (v.text.toString().toInt() <= viewModel.sportsCheckRecordTotalPage &&
-                    v.text.toString().toInt() != 0
-                ) {
-                    pageSelectButtonEnabled(v.text.toString().toInt())
-                    imm.hideSoftInputFromWindow(v.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
-                    binding.whichPage.clearFocus()
-                    viewModel.sportsCheckRecordCurrentPage = v.text.toString().toInt()
-                    viewModel.getSportsCheckRecord(
-                        viewModel.sportsCheckRecordYearTerm,
-                        viewModel.sportsCheckRecordCurrentPage
-                    )
-                } else {
-                    "呃呃呃...没那么多页".showShortToast()
+            if (viewModel.yearTerm.isEmpty()) {
+                selfViewModel.getSportsYearTerm()
+            } else {
+                lifecycleScope.launch {
+                    viewModel.getSportsCheckRecordPaging(
+                        yearTerm = viewModel.sportsCheckRecordYearTerm
+                    ) { pages ->
+                        viewModel.sportsCheckRecordTotalPage = pages
+                    }.collect { pagingData ->
+                        pagingAdapter.submitData(pagingData)
+                    }
                 }
             }
-            true
-        }
-
-        binding.previousPage.setOnClickListener {
-            if (
-                viewModel.sportsCheckRecordCurrentPage > 0 &&
-                viewModel.sportsCheckRecordCurrentPage <= viewModel.sportsCheckRecordTotalPage
-            ) {
-                viewModel.sportsCheckRecordCurrentPage -= 1
-                pageSelectButtonEnabled(viewModel.sportsCheckRecordCurrentPage)
-                binding.whichPage.setText(viewModel.sportsCheckRecordCurrentPage.toString())
-                viewModel.getSportsCheckRecord(
-                    viewModel.sportsCheckRecordYearTerm,
-                    viewModel.sportsCheckRecordCurrentPage
-                )
-            }
-            imm.hideSoftInputFromWindow(view.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
-            binding.whichPage.clearFocus()
-        }
-
-        binding.nextPage.setOnClickListener {
-            if (
-                viewModel.sportsCheckRecordCurrentPage > 0 &&
-                viewModel.sportsCheckRecordCurrentPage <= viewModel.sportsCheckRecordTotalPage
-            ) {
-                viewModel.sportsCheckRecordCurrentPage += 1
-                pageSelectButtonEnabled(viewModel.sportsCheckRecordCurrentPage)
-                binding.whichPage.setText(viewModel.sportsCheckRecordCurrentPage.toString())
-                viewModel.getSportsCheckRecord(
-                    viewModel.sportsCheckRecordYearTerm,
-                    viewModel.sportsCheckRecordCurrentPage
-                )
-            }
-            imm.hideSoftInputFromWindow(view.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
-            binding.whichPage.clearFocus()
         }
 
         binding.yearTerm.setOnItemSelectedListener { _, _, _, item ->
             viewModel.sportsCheckRecordCurrentPage = 1
-            binding.whichPage.setText(viewModel.sportsCheckRecordCurrentPage.toString())
             viewModel.sportsCheckRecordYearTerm = item as String
-            viewModel.getSportsCheckRecord(item, viewModel.sportsCheckRecordCurrentPage)
+            lifecycleScope.launch {
+                viewModel.getSportsCheckRecordPaging(
+                    yearTerm = viewModel.sportsCheckRecordYearTerm
+                ) { pages ->
+                    viewModel.sportsCheckRecordTotalPage = pages
+                }.collect { pagingData ->
+                    pagingAdapter.submitData(pagingData)
+                    layoutManager.scrollToPosition(0)
+                }
+            }
         }
 
         binding.fab.setOnClickListener {
@@ -186,12 +142,17 @@ class SportsCheckRecordFragment : Fragment() {
                         viewModel.yearTerm.add(yearTerm.text())
                     }
                     viewModel.sportsCheckRecordYearTerm = viewModel.yearTerm[0]
+                    lifecycleScope.launch {
+                        viewModel.getSportsCheckRecordPaging(
+                            yearTerm = viewModel.sportsCheckRecordYearTerm
+                        ) { pages ->
+                            viewModel.sportsCheckRecordTotalPage = pages
+                        }.collect { pagingData ->
+                            pagingAdapter.submitData(pagingData)
+                        }
+                    }
                 }
                 binding.yearTerm.setItems(viewModel.yearTerm)
-                viewModel.getSportsCheckRecord(
-                    viewModel.sportsCheckRecordYearTerm,
-                    viewModel.sportsCheckRecordCurrentPage
-                )
                 Log.d("yearTerm", viewModel.yearTerm.toString())
             } else {
                 result.exceptionOrNull()?.printStackTrace()
@@ -199,21 +160,15 @@ class SportsCheckRecordFragment : Fragment() {
             }
         }
 
-        viewModel.sportsCheckRecordLiveData.observe(viewLifecycleOwner) { result ->
-            val sportsRecord = result.getOrNull()
-            if (sportsRecord != null) {
-                viewModel.sportsCheckRecordList.clear()
-                viewModel.sportsCheckRecordList.addAll(sportsRecord.rows)
-                if (viewModel.sportsCheckRecordTotalPage != ceil(sportsRecord.total / 20.0).toInt()) {
-                    viewModel.sportsCheckRecordTotalPage = ceil(sportsRecord.total / 20.0).toInt()
-                    binding.totalPage.text = viewModel.sportsCheckRecordTotalPage.toString()
+        pagingAdapter.addLoadStateListener {
+            when (it.refresh) {
+                is LoadState.NotLoading -> {
                 }
-                pageSelectButtonEnabled(viewModel.sportsCheckRecordCurrentPage)
-                adapter.notifyDataSetChanged()
-                binding.sportsRv.smoothScrollToPosition(0)
-            } else {
-                result.exceptionOrNull()?.printStackTrace()
-                "呃呃呃...体育信息获取失败".showShortToast()
+                is LoadState.Loading -> {
+                }
+                is LoadState.Error -> {
+                    "呃呃呃...体育信息获取失败".showShortToast()
+                }
             }
         }
     }
@@ -221,31 +176,5 @@ class SportsCheckRecordFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-    }
-
-    private fun pageSelectButtonEnabled(page: Int) {
-        when (page) {
-            0 -> {
-                binding.previousPage.isEnabled = false
-                binding.nextPage.isEnabled = false
-            }
-            1 -> {
-                if (viewModel.sportsCheckRecordTotalPage == 1) {
-                    binding.previousPage.isEnabled = false
-                    binding.nextPage.isEnabled = false
-                } else {
-                    binding.previousPage.isEnabled = false
-                    binding.nextPage.isEnabled = true
-                }
-            }
-            viewModel.sportsCheckRecordTotalPage -> {
-                binding.previousPage.isEnabled = true
-                binding.nextPage.isEnabled = false
-            }
-            else -> {
-                binding.previousPage.isEnabled = true
-                binding.nextPage.isEnabled = true
-            }
-        }
     }
 }

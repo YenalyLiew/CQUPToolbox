@@ -3,6 +3,8 @@ package com.yenaly.cqupttoolbox.ui.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
+import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 import com.yenaly.cqupttoolbox.logic.Repository
 import com.yenaly.cqupttoolbox.logic.dao.LoginDao
 import com.yenaly.cqupttoolbox.logic.model.*
@@ -110,30 +112,22 @@ class MainViewModel : ViewModel() {
     var sportsCameraRecordYearTerm = "20212"
     var sportsCameraRecordCurrentPage = 1
     var sportsCameraRecordTotalPage = 1
-    val sportsCameraRecordList = ArrayList<SportsCameraRecordModel.Rows>()
-    private val _sportsCameraRecordLiveData = MutableLiveData<YearTermAndPage>()
-    val sportsCameraRecordLiveData = _sportsCameraRecordLiveData.switchMap {
-        repository.getSportsCameraRecord(it.yearTerm, it.page)
-    }
 
-    fun getSportsCameraRecord(yearTerm: String, page: Int) {
-        _sportsCameraRecordLiveData.value = YearTermAndPage(yearTerm, page)
-    }
+    fun getSportsCameraRecordPaging(
+        yearTerm: String,
+        getPages: (Int) -> Unit
+    ) = repository.getSportsCameraRecordPaging(yearTerm, getPages).cachedIn(viewModelScope)
 
     // used for SportCheckRecordFragment
 
-    var sportsCheckRecordYearTerm = "20212"
+    var sportsCheckRecordYearTerm = ""
     var sportsCheckRecordCurrentPage = 1
     var sportsCheckRecordTotalPage = 1
-    val sportsCheckRecordList = ArrayList<SportsCheckRecordModel.Rows>()
-    private val _sportsCheckRecordLiveData = MutableLiveData<YearTermAndPage>()
-    val sportsCheckRecordLiveData = _sportsCheckRecordLiveData.switchMap {
-        repository.getSportsCheckRecord(it.yearTerm, it.page)
-    }
 
-    fun getSportsCheckRecord(yearTerm: String, page: Int) {
-        _sportsCheckRecordLiveData.value = YearTermAndPage(yearTerm, page)
-    }
+    fun getSportsCheckRecordPaging(
+        yearTerm: String,
+        getPages: (Int) -> Unit
+    ) = repository.getSportsCheckRecordPaging(yearTerm, getPages).cachedIn(viewModelScope)
 
     // used for StudentSportsResumeFragment
 

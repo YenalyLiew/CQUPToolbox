@@ -1,5 +1,6 @@
 package com.yenaly.cqupttoolbox.ui.fragment.sports.camera_record
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,6 +8,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
@@ -17,18 +20,32 @@ import com.yenaly.cqupttoolbox.logic.network.Cookies
 import com.yenaly.cqupttoolbox.logic.network.SportsNetwork
 
 /**
- * An adapter for sports camera record recycler view.
- *
- * @ProjectName : CQUPTDox
+ * @ProjectName : CQUPTToolbox
  * @Author : Yenaly Liew
- * @Time : 2022/02/22 022 22:13
+ * @Time : 2022/03/31 031 08:28
  * @Description : Description...
  */
-@Deprecated("only used for recycler view. have benn moved to paging 3.")
-class SportsCameraRecordAdapter(
-    private val fragment: Fragment,
-    private val sportsRecordList: List<SportsCameraRecordModel.Rows>
-) : RecyclerView.Adapter<SportsCameraRecordAdapter.ViewHolder>() {
+class CameraRecordPagingAdapter(
+    private val fragment: Fragment
+) : PagingDataAdapter<SportsCameraRecordModel.Rows, CameraRecordPagingAdapter.ViewHolder>(COMPARATOR) {
+
+    companion object {
+        private val COMPARATOR = object : DiffUtil.ItemCallback<SportsCameraRecordModel.Rows>() {
+            override fun areItemsTheSame(
+                oldItem: SportsCameraRecordModel.Rows,
+                newItem: SportsCameraRecordModel.Rows
+            ): Boolean {
+                return oldItem.recordTime == newItem.recordTime
+            }
+
+            override fun areContentsTheSame(
+                oldItem: SportsCameraRecordModel.Rows,
+                newItem: SportsCameraRecordModel.Rows
+            ): Boolean {
+                return oldItem == newItem
+            }
+        }
+    }
 
     private lateinit var imgEntryView: View
     private lateinit var faceRealtimeBig: ImageView
@@ -55,9 +72,10 @@ class SportsCameraRecordAdapter(
         imgEntryView.setOnClickListener { dialog.cancel() }
         holder.faceRealtime.setOnClickListener {
             val position = holder.bindingAdapterPosition
+            val cameraRecord = getItem(position)
             val imageUrl = SportsNetwork.SMART_SPORTS_SCHEME +
                     SportsNetwork.SMART_SPORTS_BASE +
-                    sportsRecordList[position].imgUrl
+                    cameraRecord!!.imgUrl
             val addCookieImageUrl = GlideUrl(
                 imageUrl,
                 LazyHeaders.Builder().addHeader(
@@ -74,19 +92,20 @@ class SportsCameraRecordAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val faceSimilarityText = "${sportsRecordList[position].matchScore}%"
+        val cameraRecord = getItem(position)
+        val faceSimilarityText = "${cameraRecord?.matchScore}%"
         holder.faceSimilarity.text = faceSimilarityText
-        holder.cameraChannelName.text = sportsRecordList[position].cameraChannelName
-        holder.placeName.text = sportsRecordList[position].placeName
-        holder.recordTime.text = sportsRecordList[position].recordTime
-        if (sportsRecordList[position].remark != null) {
-            val remarkText = "(${sportsRecordList[position].remark})"
+        holder.cameraChannelName.text = cameraRecord?.cameraChannelName
+        holder.placeName.text = cameraRecord?.placeName
+        holder.recordTime.text = cameraRecord?.recordTime
+        if (cameraRecord?.remark != null) {
+            val remarkText = "(${cameraRecord.remark})"
             holder.remark.text = remarkText
             holder.remark.visibility = View.VISIBLE
         } else holder.remark.visibility = View.GONE
         val imageUrl = SportsNetwork.SMART_SPORTS_SCHEME +
                 SportsNetwork.SMART_SPORTS_BASE +
-                sportsRecordList[position].imgUrl
+                cameraRecord!!.imgUrl
         val addCookieImageUrl = GlideUrl(
             imageUrl,
             LazyHeaders.Builder().addHeader(
@@ -95,9 +114,5 @@ class SportsCameraRecordAdapter(
             ).build()
         )
         Glide.with(fragment).load(addCookieImageUrl).into(holder.faceRealtime)
-    }
-
-    override fun getItemCount(): Int {
-        return sportsRecordList.size
     }
 }

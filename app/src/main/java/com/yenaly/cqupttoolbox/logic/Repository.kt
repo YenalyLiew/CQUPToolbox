@@ -1,19 +1,18 @@
 package com.yenaly.cqupttoolbox.logic
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.google.gson.Gson
 import com.yenaly.cqupttoolbox.logic.dao.LoginDao
 import com.yenaly.cqupttoolbox.logic.model.*
 import com.yenaly.cqupttoolbox.logic.network.*
+import com.yenaly.cqupttoolbox.logic.network.CheckRecordDataSource
 import kotlinx.coroutines.Dispatchers
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.Response
+import kotlinx.coroutines.flow.Flow
 import org.jsoup.Jsoup
-import java.io.IOException
 
 /**
  * A repository of logic layer.
@@ -125,6 +124,17 @@ class Repository {
         emit(result)
     }
 
+    fun getSportsCameraRecordPaging(
+        yearTerm: String,
+        getPages: (Int) -> Unit
+    ): Flow<PagingData<SportsCameraRecordModel.Rows>> {
+        return Pager(
+            PagingConfig(pageSize = 1),
+            pagingSourceFactory = { CameraRecordDataSource(yearTerm, getPages) }
+        ).flow
+    }
+
+    @Deprecated("move livedata to flow.")
     fun getSportsCameraRecord(yearTerm: String, page: Int) = liveData(Dispatchers.IO) {
         val result = try {
             val response = SportsNetwork.getSportsCameraRecord(yearTerm, page)
@@ -142,6 +152,17 @@ class Repository {
         emit(result)
     }
 
+    fun getSportsCheckRecordPaging(
+        yearTerm: String,
+        getPages: (Int) -> Unit
+    ): Flow<PagingData<SportsCheckRecordModel.Rows>> {
+        return Pager(
+            config = PagingConfig(pageSize = 1),
+            pagingSourceFactory = { CheckRecordDataSource(yearTerm, getPages) }
+        ).flow
+    }
+
+    @Deprecated("move livedata to flow.")
     fun getSportsCheckRecord(yearTerm: String, page: Int) = liveData(Dispatchers.IO) {
         val result = try {
             val response = SportsNetwork.getSportsCheckRecord(yearTerm, page)

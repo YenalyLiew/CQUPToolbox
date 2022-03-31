@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.yenaly.cqupttoolbox.R
 import com.yenaly.cqupttoolbox.logic.model.SportsCheckRecordModel
@@ -14,18 +16,32 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 /**
- * An adapter for sports check record.
- *
- * @ProjectName : CQUPTDox
+ * @ProjectName : CQUPTToolbox
  * @Author : Yenaly Liew
- * @Time : 2022/03/04 004 17:44
+ * @Time : 2022/03/30 030 19:33
  * @Description : Description...
  */
-@Deprecated("only used for recycler view. have benn moved to paging 3.")
-class SportsCheckRecordAdapter(
-    private val fragment: Fragment,
-    private val sportsRecordList: List<SportsCheckRecordModel.Rows>
-) : RecyclerView.Adapter<SportsCheckRecordAdapter.ViewHolder>() {
+class CheckRecordPagingAdapter(
+    private val fragment: Fragment
+) : PagingDataAdapter<SportsCheckRecordModel.Rows, CheckRecordPagingAdapter.ViewHolder>(COMPARATOR) {
+
+    companion object {
+        private val COMPARATOR = object : DiffUtil.ItemCallback<SportsCheckRecordModel.Rows>() {
+            override fun areItemsTheSame(
+                oldItem: SportsCheckRecordModel.Rows,
+                newItem: SportsCheckRecordModel.Rows
+            ): Boolean {
+                return oldItem.startTime == newItem.startTime
+            }
+
+            override fun areContentsTheSame(
+                oldItem: SportsCheckRecordModel.Rows,
+                newItem: SportsCheckRecordModel.Rows
+            ): Boolean {
+                return oldItem == newItem
+            }
+        }
+    }
 
     private val itemMap = mapOf("001" to "跑步", "002" to "其他")
     private val validMap = mapOf("Y" to true, "N" to false, "1" to true, "3" to false)
@@ -56,40 +72,41 @@ class SportsCheckRecordAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val checkRecord = getItem(position)
         holder.date.text =
-            sportsRecordList[position].startTime.substringBefore(' ')
+            checkRecord?.startTime?.substringBefore(' ')
         holder.start.text = fragment.getString(
             R.string.start_time,
-            sportsRecordList[position].startTime.substringAfter(' ')
+            checkRecord?.startTime?.substringAfter(' ')
         )
         holder.end.text = fragment.getString(
             R.string.end_time,
-            sportsRecordList[position].endTime.substringAfter(' ')
+            checkRecord?.endTime?.substringAfter(' ')
         )
         holder.week.text =
-            fragment.getString(R.string.which_week, sportsRecordList[position].weekly)
+            fragment.getString(R.string.which_week, checkRecord?.weekly)
         holder.totalTime.text = fragment.getString(
             R.string.total_time,
-            sportsRecordList[position].sportDuration
+            checkRecord?.sportDuration
         )
         holder.item.text = fragment.getString(
             R.string.sports_item,
-            itemMap[sportsRecordList[position].sportItem]
+            itemMap[checkRecord?.sportItem]
         )
-        holder.place.text = sportsRecordList[position].sportField
-        if (sportsRecordList[position].sportItem == "001") {
+        holder.place.text = checkRecord?.sportField
+        if (checkRecord?.sportItem == "001") {
             holder.mile.text =
                 fragment.getString(
                     R.string.total_mile,
-                    sportsRecordList[position].mileage
+                    checkRecord.mileage
                 )
             holder.lap.text =
-                fragment.getString(R.string.total_lap, sportsRecordList[position].runLapCnt)
-            val runStartTime = simpleDateFormat.parse(sportsRecordList[position].runStartTime!!)
-            val runEndTime = simpleDateFormat.parse(sportsRecordList[position].runEndTime!!)
+                fragment.getString(R.string.total_lap, checkRecord.runLapCnt)
+            val runStartTime = simpleDateFormat.parse(checkRecord.runStartTime!!)
+            val runEndTime = simpleDateFormat.parse(checkRecord.runEndTime!!)
             val runTimeInterval = (runEndTime!!.time - runStartTime!!.time) / 1000.0 / 60.0
             val averageSpeed =
-                runTimeInterval / sportsRecordList[position].runLapCnt!!
+                runTimeInterval / checkRecord.runLapCnt!!
             holder.averageSpeed.text =
                 fragment.getString(R.string.average_speed, averageSpeed)
             holder.lap.visibility = View.VISIBLE
@@ -100,10 +117,10 @@ class SportsCheckRecordAdapter(
             holder.mile.visibility = View.GONE
             holder.averageSpeed.visibility = View.GONE
         }
-        if (validMap[sportsRecordList[position].isValid] == true) {
+        if (validMap[checkRecord?.isValid] == true) {
             holder.valid.text =
                 fragment.getString(R.string.sports_is_valid)
-            if (validMap[sportsRecordList[position].examIsValid] == true) {
+            if (validMap[checkRecord?.examIsValid] == true) {
                 holder.examOrExtra.text =
                     fragment.getString(R.string.exam_is_valid)
                 holder.colorTint.setBackgroundColor(
@@ -140,9 +157,5 @@ class SportsCheckRecordAdapter(
             holder.valid.paint.isFakeBoldText = true
             holder.examOrExtra.visibility = View.GONE
         }
-    }
-
-    override fun getItemCount(): Int {
-        return sportsRecordList.size
     }
 }
