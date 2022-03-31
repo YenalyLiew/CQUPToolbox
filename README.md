@@ -4,7 +4,7 @@
 ![GitHub stars](https://img.shields.io/github/stars/YenalyLiew/CQUPToolbox)
 ![GitHub forks](https://img.shields.io/github/forks/YenalyLiew/CQUPToolbox)
 
-一个简单的CQUPT工具箱。
+一个简单实用的CQUPT工具箱。
 
 借助了We重邮，教务在线以及重邮智慧体育的各种接口而诞生的Android软件。
 
@@ -35,7 +35,7 @@
 
 ## 待实现
 
-1. Paging3运用到分页。
+1. ~~Paging3运用到分页~~（已实现）。
 2. 一键当日内出入校。
 3. Flow运用在Repository层而不是LiveData。
 4. 优化界面。
