@@ -47,7 +47,9 @@ class CheckRecordPagingAdapter(
     private val validMap = mapOf("Y" to true, "N" to false, "1" to true, "3" to false)
     private val appealStatusMap = mapOf(2 to true, 3 to false, null to true)
 
-    private val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+    private val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
+    private val currentWeek = SimpleDateFormat("EEEE", Locale.CHINA)
+    private val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.CHINA)
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val date: TextView = view.findViewById(R.id.sports_check_date)
@@ -73,28 +75,32 @@ class CheckRecordPagingAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val checkRecord = getItem(position)
-        holder.date.text =
-            checkRecord?.startTime?.substringBefore(' ')
+        val parseTime = simpleDateFormat.parse(checkRecord!!.startTime)!!
+        holder.date.text = currentDate.format(parseTime)
         holder.start.text = fragment.getString(
             R.string.start_time,
-            checkRecord?.startTime?.substringAfter(' ')
+            checkRecord.startTime.substringAfter(' ')
         )
         holder.end.text = fragment.getString(
             R.string.end_time,
-            checkRecord?.endTime?.substringAfter(' ')
+            checkRecord.endTime.substringAfter(' ')
         )
         holder.week.text =
-            fragment.getString(R.string.which_week, checkRecord?.weekly)
+            fragment.getString(
+                R.string.which_week,
+                checkRecord.weekly,
+                currentWeek.format(parseTime)
+            )
         holder.totalTime.text = fragment.getString(
             R.string.total_time,
-            checkRecord?.sportDuration
+            checkRecord.sportDuration
         )
         holder.item.text = fragment.getString(
             R.string.sports_item,
-            itemMap[checkRecord?.sportItem]
+            itemMap[checkRecord.sportItem]
         )
-        holder.place.text = checkRecord?.sportField
-        if (checkRecord?.sportItem == "001") {
+        holder.place.text = checkRecord.sportField
+        if (checkRecord.sportItem == "001") {
             holder.mile.text =
                 fragment.getString(
                     R.string.total_mile,
@@ -117,10 +123,10 @@ class CheckRecordPagingAdapter(
             holder.mile.visibility = View.GONE
             holder.averageSpeed.visibility = View.GONE
         }
-        if (validMap[checkRecord?.isValid] == true) {
+        if (validMap[checkRecord.isValid] == true) {
             holder.valid.text =
                 fragment.getString(R.string.sports_is_valid)
-            if (validMap[checkRecord?.examIsValid] == true) {
+            if (validMap[checkRecord.examIsValid] == true) {
                 holder.examOrExtra.text =
                     fragment.getString(R.string.exam_is_valid)
                 holder.colorTint.setBackgroundColor(

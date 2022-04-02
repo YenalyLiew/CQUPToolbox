@@ -8,6 +8,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.activity.viewModels
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.yenaly.cqupttoolbox.R
 import com.yenaly.cqupttoolbox.databinding.ActivityLoginBinding
@@ -30,6 +31,7 @@ class LoginActivity : RootActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        installSplashScreen()
 
         if (
             viewModel.getLoginCode().isNotEmpty() &&

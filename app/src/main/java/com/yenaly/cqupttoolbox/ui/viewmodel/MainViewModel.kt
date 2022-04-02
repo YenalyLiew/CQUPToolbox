@@ -4,10 +4,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.insertSeparators
+import androidx.paging.map
 import com.yenaly.cqupttoolbox.logic.Repository
 import com.yenaly.cqupttoolbox.logic.dao.LoginDao
 import com.yenaly.cqupttoolbox.logic.model.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import okhttp3.Cookie
 
 /**
@@ -116,7 +121,23 @@ class MainViewModel : ViewModel() {
     fun getSportsCameraRecordPaging(
         yearTerm: String,
         getPages: (Int) -> Unit
-    ) = repository.getSportsCameraRecordPaging(yearTerm, getPages).cachedIn(viewModelScope)
+    ): Flow<PagingData<SportsCameraPagingModel>> =
+        repository.getSportsCameraRecordPaging(yearTerm, getPages)
+            .map { pagingData -> pagingData.map(SportsCameraPagingModel::InfoItem) }
+            .map {
+                it.insertSeparators { before, after ->
+                    if (after == null) return@insertSeparators null
+                    if (before == null) {
+                        return@insertSeparators SportsCameraPagingModel.SeparatorItem(after.date)
+                    }
+                    if (before.date == after.date) {
+                        null
+                    } else {
+                        SportsCameraPagingModel.SeparatorItem(after.date)
+                    }
+                }
+            }
+            .cachedIn(viewModelScope)
 
     // used for SportCheckRecordFragment
 

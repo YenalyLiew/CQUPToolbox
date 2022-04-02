@@ -48,7 +48,7 @@
 
     <string name="DI">第</string>
     <string name="week_ZHOU">周</string>
-    <string name="which_week">第%d周</string>
+    <string name="which_week">第%d周 %s</string>
     <string name="to">–</string>
     <string name="week_XINGQI">星期</string>
     <string name="one_to_two">1–2节</string>

@@ -18,7 +18,7 @@
         <activity
             android:name=".ui.activity.LoginActivity"
             android:exported="true"
-            android:theme="@style/LoginTheme">
+            android:theme="@style/LoginSplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,6 +28,7 @@
         <activity
             android:name=".ui.activity.MainActivity"
             android:exported="true"
+            android:theme="@style/MainSplashScreen"
             android:windowSoftInputMode="adjustPan">
 
         </activity>
