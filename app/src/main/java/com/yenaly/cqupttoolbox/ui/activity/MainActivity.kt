@@ -39,6 +39,7 @@ class MainActivity : RootActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var navHostFragment: NavHostFragment
     private lateinit var navController: NavController
+    private var goOutEndTime: String? = null
     private var exitTime = 0L
     private val viewModel: MainViewModel by viewModels()
 
@@ -110,6 +111,28 @@ class MainActivity : RootActivity() {
                 .show()
             false
         }
+        binding.navView.menu.findItem(R.id.click_out).setOnMenuItemClickListener {
+            MaterialAlertDialogBuilder(this)
+                .setCancelable(true)
+                .setTitle("你确定要申请吗？")
+                .setMessage("确保当前不是审批制。并在相应时间段内回来，忘记时间概不负责。时间段一会会有提示。")
+                .setPositiveButton("好") { _, _ ->
+                    goOutSchool()
+                    showLoadingDialog(loadingText = "正在尝试中")
+                    viewModel.goOutSchool(
+                        username = viewModel.userCode!!,
+                        password = viewModel.userPassword!!,
+                        openId = "${(1000000..2000000).random()}",
+                        why = "有事",
+                        where = "重庆邮电大学附近"
+                    ) { endTime ->
+                        goOutEndTime = endTime
+                    }
+                }
+                .setNegativeButton("算了吧", null)
+                .show()
+            false
+        }
         binding.navView.menu.findItem(R.id.logout).setOnMenuItemClickListener {
             MaterialAlertDialogBuilder(this)
                 .setCancelable(true)
@@ -176,6 +199,30 @@ class MainActivity : RootActivity() {
                     "按道理说打卡应该成功了，不放心可以去We重邮看看".showShortToast()
                     hideLoadingDialog()
                 }
+            } else {
+                result.exceptionOrNull()?.printStackTrace()
+                hideLoadingDialog()
+                result.exceptionOrNull()?.message?.showShortToast()
+            }
+        }
+    }
+
+    private fun goOutSchool() {
+        viewModel.goOutSchoolLiveData.observe(this) { result ->
+            val whichKind = result.getOrNull()
+            if (whichKind != null) {
+                hideLoadingDialog()
+                MaterialAlertDialogBuilder(this)
+                    .setCancelable(true)
+                    .setTitle("申请成功喽！")
+                    .setMessage(
+                        "已成功申请[$whichKind]！\n" +
+                                "入校截至时间：${goOutEndTime ?: "加载失败"}，\n" +
+                                "不放心可以去We重邮看看"
+                    )
+                    .setPositiveButton("明白了😋", null)
+                    .show()
+                goOutEndTime = null
             } else {
                 result.exceptionOrNull()?.printStackTrace()
                 hideLoadingDialog()

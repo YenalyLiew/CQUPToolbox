@@ -21,6 +21,9 @@ data class WeLoginResponseModel(
         val id: String,
 
         @SerializedName("sex")
-        val gender: String
+        val gender: String,
+
+        @SerializedName("yxm")
+        val college: String
     )
 }

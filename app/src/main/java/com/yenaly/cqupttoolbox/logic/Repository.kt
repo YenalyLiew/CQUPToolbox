@@ -262,4 +262,57 @@ class Repository {
         }
         emit(result)
     }
+
+    fun goOutSchool(
+        username: String,
+        password: String,
+        openId: String,
+        why: String,
+        where: String,
+        getEndTime: (String) -> Unit
+    ) = liveData(Dispatchers.IO) {
+        val result = try {
+            val gson = Gson()
+            val loginWeCqupt = LoginNetwork.loginWeCqupt(openId, username, password)
+            val loginString = loginWeCqupt.body!!.string()
+            val loginInformation = gson.fromJson(loginString, WeLoginResponseModel::class.java)
+            if (loginInformation.message == "ok") {
+                val id = loginInformation.data.id
+                val infoResponse = WeNetwork.getGoOutSchoolInfo(id, openId)
+                val infoString = infoResponse.body!!.string()
+                val infoInformation = gson.fromJson(infoString, OutSchoolInfoModel::class.java)
+                if (infoInformation.message == "ok") {
+                    val name = loginInformation.data.name
+                    val college = loginInformation.data.college
+                    val kind = infoInformation.data.modulesList[0].name
+                    val outResponse =
+                        WeNetwork.goOutSchool(
+                            name,
+                            id,
+                            college,
+                            openId,
+                            why,
+                            kind,
+                            where,
+                            getEndTime
+                        )
+                    val outString = outResponse.body!!.string()
+                    val outInformation = gson.fromJson(outString, WeLoginResponseModel::class.java)
+                    Log.d("out_string", outString)
+                    if (outInformation.message == "OK") {
+                        Result.success(kind)
+                    } else {
+                        Result.failure(RuntimeException(outInformation.message))
+                    }
+                } else {
+                    Result.failure(RuntimeException("获取出入校信息失败"))
+                }
+            } else {
+                Result.failure(RuntimeException("获取个人信息失败"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+        emit(result)
+    }
 }

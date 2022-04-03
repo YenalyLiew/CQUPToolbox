@@ -5,6 +5,7 @@ import android.util.Log
 import com.google.gson.Gson
 import okhttp3.*
 import ru.gildor.coroutines.okhttp.await
+import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -26,6 +27,10 @@ object WeNetwork {
         "api\\get_week_time.php"
     private const val PUNCH_IN_EVERY_DAY =
         "api\\mrdk\\post_mrdk_info.php"
+    private const val GET_GO_OUT_INFO =
+        "api\\lxsp_new\\get_lxsp_modules.php"
+    private const val POST_GO_OUT_INFO =
+        "api\\lxsp_new\\post_lxsp_spxx.php"
 
     private val r = listOf(
         "s9ZS",
@@ -114,6 +119,22 @@ object WeNetwork {
         currentDetailedLocation
     ).await()
 
+    suspend fun getGoOutSchoolInfo(
+        id: String,
+        openId: String
+    ) = getGoOutSchoolInfoCall(id, openId).await()
+
+    suspend fun goOutSchool(
+        name: String,
+        id: String,
+        college: String,
+        openId: String,
+        why: String,
+        whichKind: String,
+        where: String,
+        getEndTime: (String) -> Unit
+    ) = goOutSchoolCall(name, id, college, openId, why, whichKind, where, getEndTime).await()
+
     private fun getWeekTimeCall(): Call {
         val okHttpClient = OkHttpClient()
         val httpUrl = HttpUrl.Builder()
@@ -174,6 +195,98 @@ object WeNetwork {
             "timestamp" to timestamp
         )
         Log.d("punch_form_map", formMap.toString())
+        val formJson = Gson().toJson(formMap)
+        val byteFormJson = formJson.toByteArray()
+        val encodedByteFormJson = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Base64.getEncoder().encodeToString(byteFormJson)
+        } else {
+            String(android.util.Base64.encode(byteFormJson, android.util.Base64.DEFAULT))
+        }
+        val formBody = FormBody.Builder()
+            .add("key", encodedByteFormJson)
+            .build()
+        val request = Request.Builder()
+            .url(httpUrl)
+            .post(formBody)
+            .build()
+        return okHttpClient.newCall(request)
+    }
+
+    private fun getGoOutSchoolInfoCall(
+        id: String,
+        openId: String
+    ): Call {
+        val okHttpClient = OkHttpClient()
+        val httpUrl = HttpUrl.Builder()
+            .scheme(WE_CQUPT_SCHEME)
+            .host(WE_CQUPT_BASE)
+            .addPathSegments(GET_GO_OUT_INFO)
+            .build()
+        val currentTime = System.currentTimeMillis()
+        val timestamp = (currentTime / 1000.0).toInt().toString()
+        val formMap = mapOf(
+            "xh" to id,
+            "openid" to openId,
+            "timestamp" to timestamp
+        )
+        val formJson = Gson().toJson(formMap)
+        val byteFormJson = formJson.toByteArray()
+        val encodedByteFormJson = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Base64.getEncoder().encodeToString(byteFormJson)
+        } else {
+            String(android.util.Base64.encode(byteFormJson, android.util.Base64.DEFAULT))
+        }
+        val formBody = FormBody.Builder()
+            .add("key", encodedByteFormJson)
+            .build()
+        val request = Request.Builder()
+            .url(httpUrl)
+            .post(formBody)
+            .build()
+        return okHttpClient.newCall(request)
+    }
+
+    private fun goOutSchoolCall(
+        name: String,
+        id: String,
+        college: String,
+        openId: String,
+        why: String,
+        whichKind: String,
+        where: String,
+        getEndTime: (String) -> Unit
+    ): Call {
+        val okHttpClient = OkHttpClient()
+        val httpUrl = HttpUrl.Builder()
+            .scheme(WE_CQUPT_SCHEME)
+            .host(WE_CQUPT_BASE)
+            .addPathSegments(POST_GO_OUT_INFO)
+            .build()
+        val currentTime = System.currentTimeMillis()
+        val timestamp = (currentTime / 1000.0).toInt().toString()
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
+        val startTime = dateFormat.format(Date(currentTime))
+        val endHour = whichKind.filter { it.isDigit() || it == '.' }.toFloat()
+        Log.d("endHour", endHour.toString())
+        val endTime = dateFormat.format(Date(currentTime + (endHour * 60 * 60 * 1000).toLong()))
+        getEndTime(endTime)
+        val grade = if (id.first().isLetter()) id.substring(1, 5) else id.substring(0, 4)
+        val formMap = mapOf(
+            "xh" to id,
+            "name" to name,
+            "xy" to college,
+            "nj" to grade,
+            "openid" to openId,
+            "wcmdd" to "重庆市,重庆市,南岸区",
+            "qjsy" to why,
+            "wcxxdd" to where,
+            "sfly" to "请选择",
+            "wcrq" to startTime,
+            "qjlx" to whichKind,
+            "yjfxsj" to endTime,
+            "beizhu" to "",
+            "timestamp" to timestamp
+        )
         val formJson = Gson().toJson(formMap)
         val byteFormJson = formJson.toByteArray()
         val encodedByteFormJson = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

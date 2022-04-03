@@ -47,6 +47,10 @@
                     android:id="@+id/click_punch"
                     android:icon="@drawable/ic_baseline_health_and_safety_24"
                     android:title="@string/click_punch" />
+                <item
+                    android:id="@+id/click_out"
+                    android:icon="@drawable/ic_sports"
+                    android:title="@string/click_out" />
             </group>
         </menu>
     </item>

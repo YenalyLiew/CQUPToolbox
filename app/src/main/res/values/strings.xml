@@ -173,4 +173,5 @@
     <string name="little_function">小功能</string>
     <string name="ensure_in_safety">一键打卡前务必确定你是绿码人员，处于低风险地区</string>
     <string name="hello">你好呀</string>
+    <string name="click_out">一键非审出校申请</string>
 </resources>

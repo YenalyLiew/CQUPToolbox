@@ -59,8 +59,8 @@ class MainViewModel : ViewModel() {
         _weekTimeLiveData.value = _weekTimeLiveData.value
     }
 
-    private val weCquptPunchMutableLiveData = MutableLiveData<WePunchModel>()
-    val weCquptPunchLiveData = weCquptPunchMutableLiveData.switchMap {
+    private val _weCquptPunchLiveData = MutableLiveData<WePunchModel>()
+    val weCquptPunchLiveData = _weCquptPunchLiveData.switchMap {
         repository.punchInEveryDay(
             it.username,
             it.password,
@@ -85,7 +85,7 @@ class MainViewModel : ViewModel() {
         currentLocation: String,
         currentDetailedLocation: String
     ) {
-        weCquptPunchMutableLiveData.value = WePunchModel(
+        _weCquptPunchLiveData.value = WePunchModel(
             username,
             password,
             openId,
@@ -97,6 +97,32 @@ class MainViewModel : ViewModel() {
             currentDetailedLocation
         )
     }
+
+    private val _goOutSchoolLiveData = MutableLiveData<GoOutSchoolVariables>()
+    val goOutSchoolLiveData = _goOutSchoolLiveData.switchMap {
+        repository.goOutSchool(
+            it.username,
+            it.password,
+            it.openId,
+            it.why,
+            it.where,
+            it.getEndTime
+        )
+    }
+
+    fun goOutSchool(
+        username: String,
+        password: String,
+        openId: String,
+        why: String,
+        where: String,
+        getEndTime: (String) -> Unit
+    ) {
+        _goOutSchoolLiveData.value = GoOutSchoolVariables(
+            username, password, openId, why, where, getEndTime
+        )
+    }
+
 
     // used for EmptyRoomSearchFragment
 
@@ -114,7 +140,7 @@ class MainViewModel : ViewModel() {
 
     val yearTerm = ArrayList<String>()
 
-    var sportsCameraRecordYearTerm = "20212"
+    var sportsCameraRecordYearTerm = ""
     var sportsCameraRecordCurrentPage = 1
     var sportsCameraRecordTotalPage = 1
 
@@ -166,4 +192,15 @@ class MainViewModel : ViewModel() {
         LoginDao.saveSmartSportsCookies(cookiesList)
 
     fun getSmartSportsCookies() = LoginDao.getSmartSportsCookies()
+
+    // Data class
+
+    data class GoOutSchoolVariables(
+        val username: String,
+        val password: String,
+        val openId: String,
+        val why: String,
+        val where: String,
+        val getEndTime: (String) -> Unit
+    )
 }
