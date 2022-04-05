@@ -83,17 +83,24 @@ class Repository {
                     captcha,
                     executionValue
                 )
-                val docPost = Jsoup.parse(postIdAndPwd.body!!.string())
+                val stringPost = postIdAndPwd.body!!.string()
+                val docPost = Jsoup.parse(stringPost)
                 val statement = docPost.getElementById("yearTerm")
-                Log.d("doc_login", docPost.toString())
+                Log.d("doc_login", stringPost)
                 if (statement != null) {
                     LoginDao.saveSmartSportsCookies(Cookies.smartSportsCookiesList)
                     Result.success(true)
                 } else {
-                    if (docPost.getElementById("showErrorTip") == null) {
-                        Result.failure(RuntimeException("密码可能不正确，未知错误"))
-                    } else {
+                    if (docPost.getElementById("showErrorTip") != null || stringPost.isBlank()) {
                         Result.failure(RuntimeException("别忘了先连接内网，再重新试试吧"))
+                    } else {
+                        if (stringPost.contains("运行时异常")) {
+                            // 能获取到cookie就是成功，系统炸了照样获取体育信息。
+                            LoginDao.saveSmartSportsCookies(Cookies.smartSportsCookiesList)
+                            Result.failure(RuntimeException("哈哈，智慧体育系统炸了"))
+                        } else {
+                            Result.failure(RuntimeException("密码可能不正确，未知错误"))
+                        }
                     }
                 }
             } else {
@@ -268,8 +275,7 @@ class Repository {
         password: String,
         openId: String,
         why: String,
-        where: String,
-        getEndTime: (String) -> Unit
+        where: String
     ) = liveData(Dispatchers.IO) {
         val result = try {
             val gson = Gson()
@@ -293,8 +299,7 @@ class Repository {
                             openId,
                             why,
                             kind,
-                            where,
-                            getEndTime
+                            where
                         )
                     val outString = outResponse.body!!.string()
                     val outInformation = gson.fromJson(outString, WeLoginResponseModel::class.java)

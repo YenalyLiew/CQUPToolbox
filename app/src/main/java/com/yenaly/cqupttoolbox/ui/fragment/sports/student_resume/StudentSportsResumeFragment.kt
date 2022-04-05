@@ -3,20 +3,16 @@ package com.yenaly.cqupttoolbox.ui.fragment.sports.student_resume
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
-import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import com.yenaly.cqupttoolbox.R
 import com.yenaly.cqupttoolbox.databinding.FragmentStudentSportsResumeBinding
 import com.yenaly.cqupttoolbox.logic.model.StudentSportsResumeMobileModel
 import com.yenaly.cqupttoolbox.logic.network.Cookies
 import com.yenaly.cqupttoolbox.ui.activity.MainActivity
-import com.yenaly.cqupttoolbox.ui.viewmodel.MainViewModel
-import com.yenaly.cqupttoolbox.ui.viewmodel.SportsSingleViewModel
+import com.yenaly.cqupttoolbox.ui.fragment.sports.SportsRootFragment
 import com.yenaly.cqupttoolbox.utils.ToastUtils.showShortToast
 
 /**
@@ -28,12 +24,11 @@ import com.yenaly.cqupttoolbox.utils.ToastUtils.showShortToast
  * @Description : Description...
  */
 
-class StudentSportsResumeFragment : Fragment() {
+class StudentSportsResumeFragment : SportsRootFragment() {
 
     private var _binding: FragmentStudentSportsResumeBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: MainViewModel by activityViewModels()
-    private val selfViewModel = SportsSingleViewModel()  // Deliberately
+
     private val validMap = mapOf("Y" to "有", "N" to "待定/无")
 
     override fun onCreateView(
@@ -62,8 +57,11 @@ class StudentSportsResumeFragment : Fragment() {
             )
             selfViewModel.loginSmartSports(viewModel.userCode!!, viewModel.userPassword!!, "")
         } else {
-            if (viewModel.yearTerm.isEmpty()) selfViewModel.getSportsYearTerm()
-            viewModel.getStudentSportsResume(viewModel.studentSportsResumeYearTerm)
+            if (viewModel.yearTerm.isEmpty()) {
+                selfViewModel.getSportsYearTerm()
+            } else {
+                viewModel.getStudentSportsResume(viewModel.studentSportsResumeYearTerm)
+            }
         }
 
         binding.yearTerm.setOnItemSelectedListener { _, _, _, item ->
@@ -91,40 +89,13 @@ class StudentSportsResumeFragment : Fragment() {
             binding.fab.isEnabled = false
         }
 
-        selfViewModel.loginSmartSportsLiveData.observe(viewLifecycleOwner) { result ->
-            val isSuccess = result.getOrNull()
-            if (isSuccess != null) {
-                if (isSuccess) {
-                    if (viewModel.yearTerm.isEmpty()) {
-                        (requireActivity() as MainActivity).hideLoadingDialog()
-                        selfViewModel.getSportsYearTerm()
-                    }
-                }
-            } else {
-                result.exceptionOrNull()?.printStackTrace()
-                (requireActivity() as MainActivity).hideLoadingDialog()
-                result.exceptionOrNull()?.message?.showShortToast()
-            }
-            binding.fab.isEnabled = true
-        }
+        super.loginSmartSports(snackBarView = binding.coordinatorLayout, fab = binding.fab)
 
-        selfViewModel.getSportsYearTermLiveData.observe(viewLifecycleOwner) { result ->
-            val yearTerms = result.getOrNull()
-            if (yearTerms != null) {
-                Log.d("get_sports_year_term", yearTerms.toString())
-                if (viewModel.yearTerm.isEmpty()) {
-                    for (yearTerm in yearTerms) {
-                        viewModel.yearTerm.add(yearTerm.text())
-                    }
-                    viewModel.studentSportsResumeYearTerm = viewModel.yearTerm[0]
-                }
-                binding.yearTerm.setItems(viewModel.yearTerm)
-                viewModel.getStudentSportsResume(viewModel.studentSportsResumeYearTerm)
-                Log.d("yearTerm", viewModel.yearTerm.toString())
-            } else {
-                result.exceptionOrNull()?.printStackTrace()
-                "获取学期列表失败了捏，稍后再试一下吧 (getSportsYearTerm)".showShortToast()
-            }
+        super.getSportsYearTerm(
+            yearTermSpinner = binding.yearTerm,
+            snackBarView = binding.coordinatorLayout
+        ) {
+            viewModel.getStudentSportsResume(viewModel.studentSportsResumeYearTerm)
         }
 
         viewModel.studentSportsResumeLiveData.observe(viewLifecycleOwner) { result ->

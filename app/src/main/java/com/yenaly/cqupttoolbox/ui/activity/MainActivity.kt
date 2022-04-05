@@ -19,6 +19,7 @@ import com.yenaly.cqupttoolbox.R
 import com.yenaly.cqupttoolbox.databinding.ActivityMainBinding
 import com.yenaly.cqupttoolbox.logic.network.Cookies
 import com.yenaly.cqupttoolbox.ui.viewmodel.MainViewModel
+import com.yenaly.cqupttoolbox.utils.DisplayUtils.getStatusBarHeight
 import com.yenaly.cqupttoolbox.utils.ToastUtils.showShortToast
 import de.hdodenhof.circleimageview.CircleImageView
 
@@ -39,7 +40,6 @@ class MainActivity : RootActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var navHostFragment: NavHostFragment
     private lateinit var navController: NavController
-    private var goOutEndTime: String? = null
     private var exitTime = 0L
     private val viewModel: MainViewModel by viewModels()
 
@@ -125,9 +125,7 @@ class MainActivity : RootActivity() {
                         openId = "${(1000000..2000000).random()}",
                         why = "有事",
                         where = "重庆邮电大学附近"
-                    ) { endTime ->
-                        goOutEndTime = endTime
-                    }
+                    )
                 }
                 .setNegativeButton("算了吧", null)
                 .show()
@@ -217,12 +215,11 @@ class MainActivity : RootActivity() {
                     .setTitle("申请成功喽！")
                     .setMessage(
                         "已成功申请[$whichKind]！\n" +
-                                "入校截至时间：${goOutEndTime ?: "加载失败"}，\n" +
+                                "不要忘记返校规定时长！\n" +
                                 "不放心可以去We重邮看看"
                     )
                     .setPositiveButton("明白了😋", null)
                     .show()
-                goOutEndTime = null
             } else {
                 result.exceptionOrNull()?.printStackTrace()
                 hideLoadingDialog()

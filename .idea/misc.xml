@@ -3,11 +3,15 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/drawable/four_round.xml" value="0.137" />
+        <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/drawable/four_round_reverse.xml" value="0.137" />
+        <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/drawable/four_round_stroke_grey.xml" value="0.137" />
         <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1785" />
         <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/drawable/two_round_bottom.xml" value="0.137" />
         <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/layout/activity_login.xml" value="0.268" />
         <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/layout/activity_login_new.xml" value="0.268" />
         <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/layout/activity_main.xml" value="0.1265625" />
+        <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/layout/app_bar_ability.xml" value="0.1265625" />
         <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/layout/content_ability.xml" value="0.22826086956521738" />
         <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/layout/dialog_loading.xml" value="0.1265625" />
         <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/layout/dialog_photo.xml" value="0.22826086956521738" />
@@ -23,6 +27,8 @@
         <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/layout/nav_header_ability.xml" value="0.22826086956521738" />
         <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/layout/settings_activity.xml" value="0.22826086956521738" />
         <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/menu/drawer_main.xml" value="0.275" />
+        <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/mipmap-anydpi-v26/ct_launcher.xml" value="0.137" />
+        <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/mipmap-anydpi-v26/ct_launcher_round.xml" value="0.137" />
         <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1785" />
         <entry key="..\:/Users/wrzg8/AndroidStudioProjects/CQUPTToolbox/app/src/main/res/xml/root_preferences.xml" value="0.1265625" />
       </map>

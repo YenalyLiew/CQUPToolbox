@@ -131,9 +131,8 @@ object WeNetwork {
         openId: String,
         why: String,
         whichKind: String,
-        where: String,
-        getEndTime: (String) -> Unit
-    ) = goOutSchoolCall(name, id, college, openId, why, whichKind, where, getEndTime).await()
+        where: String
+    ) = goOutSchoolCall(name, id, college, openId, why, whichKind, where).await()
 
     private fun getWeekTimeCall(): Call {
         val okHttpClient = OkHttpClient()
@@ -253,8 +252,7 @@ object WeNetwork {
         openId: String,
         why: String,
         whichKind: String,
-        where: String,
-        getEndTime: (String) -> Unit
+        where: String
     ): Call {
         val okHttpClient = OkHttpClient()
         val httpUrl = HttpUrl.Builder()
@@ -264,12 +262,15 @@ object WeNetwork {
             .build()
         val currentTime = System.currentTimeMillis()
         val timestamp = (currentTime / 1000.0).toInt().toString()
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
-        val startTime = dateFormat.format(Date(currentTime))
-        val endHour = whichKind.filter { it.isDigit() || it == '.' }.toFloat()
-        Log.d("endHour", endHour.toString())
-        val endTime = dateFormat.format(Date(currentTime + (endHour * 60 * 60 * 1000).toLong()))
-        getEndTime(endTime)
+        val startTimeFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
+        val endTimeFormat = SimpleDateFormat("yyyy-MM-dd", Locale.CHINA)
+        val currentTimeDate = Date(currentTime)
+        val startTime = startTimeFormat.format(currentTimeDate)
+        val endTime = endTimeFormat.format(currentTimeDate) + " 23:59:59"
+        // Good code, deserve to be saved.
+        // val endHour = whichKind.filter { it.isDigit() || it == '.' }.toFloat()
+        // Log.d("endHour", endHour.toString())
+        // val endTime = dateFormat.format(Date(currentTime + (endHour * 60 * 60 * 1000).toLong()))
         val grade = if (id.first().isLetter()) id.substring(1, 5) else id.substring(0, 4)
         val formMap = mapOf(
             "xh" to id,

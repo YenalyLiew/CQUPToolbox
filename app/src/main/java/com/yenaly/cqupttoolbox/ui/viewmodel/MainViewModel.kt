@@ -105,8 +105,7 @@ class MainViewModel : ViewModel() {
             it.password,
             it.openId,
             it.why,
-            it.where,
-            it.getEndTime
+            it.where
         )
     }
 
@@ -115,11 +114,10 @@ class MainViewModel : ViewModel() {
         password: String,
         openId: String,
         why: String,
-        where: String,
-        getEndTime: (String) -> Unit
+        where: String
     ) {
         _goOutSchoolLiveData.value = GoOutSchoolVariables(
-            username, password, openId, why, where, getEndTime
+            username, password, openId, why, where
         )
     }
 
@@ -178,7 +176,7 @@ class MainViewModel : ViewModel() {
 
     // used for StudentSportsResumeFragment
 
-    var studentSportsResumeYearTerm = "20212"
+    var studentSportsResumeYearTerm = ""
     private val _studentSportsResumeLiveData = MutableLiveData<String>()
     val studentSportsResumeLiveData = _studentSportsResumeLiveData.switchMap { yearTerm ->
         repository.getStudentSportsResume(yearTerm)
@@ -200,7 +198,6 @@ class MainViewModel : ViewModel() {
         val password: String,
         val openId: String,
         val why: String,
-        val where: String,
-        val getEndTime: (String) -> Unit
+        val where: String
     )
 }

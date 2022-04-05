@@ -67,6 +67,18 @@ class SettingsActivity : RootActivity() {
                 }
 
                 aboutSoftware?.setOnPreferenceClickListener {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle("🥺🥺🥺🥺🥺")
+                        .setMessage(
+                            "Made by Yenaly Liew.\n" +
+                                    "GitHub: YenalyLiew\n" +
+                                    "QQ: 1275408448\n" +
+                                    "好玩吗？👁️_👁️"
+                        )
+                        .setPositiveButton("好玩", null)
+                        .setNegativeButton("不好玩", null)
+                        .setNeutralButton("\uD83D\uDE05", null)
+                        .show()
                     true
                 }
             }
@@ -75,7 +87,7 @@ class SettingsActivity : RootActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.settings_activity)
+        setContentView(R.layout.activity_settings)
         toolbar = findViewById(R.id.settings_toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.let {

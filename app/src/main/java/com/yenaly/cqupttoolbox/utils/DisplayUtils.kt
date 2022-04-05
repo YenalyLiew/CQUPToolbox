@@ -36,4 +36,15 @@ object DisplayUtils {
         val scale = CTApplication.context.resources.displayMetrics.density
         return (pxValue / scale + 0.5F).toInt()
     }
+
+    /**
+     * Get status bar height.
+     */
+    fun getStatusBarHeight(): Int {
+        val resourceId =
+            CTApplication.context.resources.getIdentifier("status_bar_height", "dimen", "android")
+        return if (resourceId > 0) {
+            CTApplication.context.resources.getDimensionPixelSize(resourceId)
+        } else 0
+    }
 }

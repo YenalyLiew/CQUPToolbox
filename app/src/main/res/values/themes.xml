@@ -27,12 +27,12 @@
     </style>
 
     <style name="LoginSplashScreen" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ct_launcher</item>
         <item name="postSplashScreenTheme">@style/LoginTheme</item>
     </style>
 
     <style name="MainSplashScreen" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ct_launcher</item>
         <item name="postSplashScreenTheme">@style/Theme.CQUPTToolbox</item>
     </style>
 </resources>

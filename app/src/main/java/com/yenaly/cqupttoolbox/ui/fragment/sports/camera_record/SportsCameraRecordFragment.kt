@@ -2,13 +2,10 @@ package com.yenaly.cqupttoolbox.ui.fragment.sports.camera_record
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,8 +15,7 @@ import com.yenaly.cqupttoolbox.R
 import com.yenaly.cqupttoolbox.databinding.FragmentSportsCameraRecordBinding
 import com.yenaly.cqupttoolbox.logic.network.Cookies
 import com.yenaly.cqupttoolbox.ui.activity.MainActivity
-import com.yenaly.cqupttoolbox.ui.viewmodel.MainViewModel
-import com.yenaly.cqupttoolbox.ui.viewmodel.SportsSingleViewModel
+import com.yenaly.cqupttoolbox.ui.fragment.sports.SportsRootFragment
 import com.yenaly.cqupttoolbox.utils.ToastUtils.showShortToast
 import kotlinx.coroutines.launch
 
@@ -32,12 +28,10 @@ import kotlinx.coroutines.launch
  * @Description : Description...
  */
 
-class SportsCameraRecordFragment : Fragment() {
+class SportsCameraRecordFragment : SportsRootFragment() {
 
     private var _binding: FragmentSportsCameraRecordBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: MainViewModel by activityViewModels()
-    private val selfViewModel = SportsSingleViewModel()  // Deliberately
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -126,46 +120,20 @@ class SportsCameraRecordFragment : Fragment() {
             }
         })
 
-        selfViewModel.loginSmartSportsLiveData.observe(viewLifecycleOwner) { result ->
-            val isSuccess = result.getOrNull()
-            if (isSuccess != null) {
-                if (isSuccess) {
-                    if (viewModel.yearTerm.isEmpty()) {
-                        (requireActivity() as MainActivity).hideLoadingDialog()
-                        selfViewModel.getSportsYearTerm()
-                    }
-                }
-            } else {
-                result.exceptionOrNull()?.printStackTrace()
-                (requireActivity() as MainActivity).hideLoadingDialog()
-                result.exceptionOrNull()?.message?.showShortToast()
-            }
-        }
+        super.loginSmartSports(snackBarView = binding.coordinatorLayout, fab = binding.fab)
 
-        selfViewModel.getSportsYearTermLiveData.observe(viewLifecycleOwner) { result ->
-            val yearTerms = result.getOrNull()
-            if (yearTerms != null) {
-                Log.d("get_sports_year_term", yearTerms.toString())
-                if (viewModel.yearTerm.isEmpty()) {
-                    for (yearTerm in yearTerms) {
-                        viewModel.yearTerm.add(yearTerm.text())
-                    }
-                    viewModel.sportsCameraRecordYearTerm = viewModel.yearTerm[0]
-                    lifecycleScope.launch {
-                        viewModel.getSportsCameraRecordPaging(
-                            yearTerm = viewModel.sportsCameraRecordYearTerm
-                        ) { pages ->
-                            viewModel.sportsCameraRecordTotalPage = pages
-                        }.collect { pagingData ->
-                            pagingAdapter.submitData(pagingData)
-                        }
-                    }
+        super.getSportsYearTerm(
+            yearTermSpinner = binding.yearTerm,
+            snackBarView = binding.coordinatorLayout
+        ) {
+            lifecycleScope.launch {
+                viewModel.getSportsCameraRecordPaging(
+                    yearTerm = viewModel.sportsCameraRecordYearTerm
+                ) { pages ->
+                    viewModel.sportsCameraRecordTotalPage = pages
+                }.collect { pagingData ->
+                    pagingAdapter.submitData(pagingData)
                 }
-                binding.yearTerm.setItems(viewModel.yearTerm)
-                Log.d("yearTerm", viewModel.yearTerm.toString())
-            } else {
-                result.exceptionOrNull()?.printStackTrace()
-                "获取学期列表失败了捏，稍后再试一下吧 (getSportsYearTerm)".showShortToast()
             }
         }
 
